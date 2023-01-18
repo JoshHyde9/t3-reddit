@@ -1,13 +1,18 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { signIn, signOut, useSession } from "next-auth/react";
-
 import { api } from "../utils/api";
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
-
+  const utils = api.useContext();
+  const { mutate } = api.post.createPost.useMutation({
+    onSuccess: async () => {
+      await utils.post.invalidate();
+    },
+  });
+  const posts = api.post.getAll.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
   return (
     <>
       <Head>
@@ -44,12 +49,26 @@ const Home: NextPage = () => {
               </div>
             </Link>
           </div>
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello.data ? hello.data.greeting : "Loading tRPC query..."}
-            </p>
-            <AuthShowcase />
-          </div>
+        </div>
+        <div>
+          <button
+            className="text-white"
+            onClick={() => mutate({ title: "Hello from client" })}
+          >
+            Create post
+          </button>
+        </div>
+        <div>
+          {posts.data?.map((post) => {
+            return (
+              <div className="text-white" key={post.id}>
+                <p>{post.id}</p>
+                <h1>{post.title}</h1>
+                <p>{post.createdAt.toString()}</p>
+                <p>{post.updatedAt.toString()}</p>
+              </div>
+            );
+          })}
         </div>
       </main>
     </>
@@ -57,27 +76,3 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-
-const AuthShowcase: React.FC = () => {
-  const { data: sessionData } = useSession();
-
-  const { data: secretMessage } = api.example.getSecretMessage.useQuery(
-    undefined, // no input
-    { enabled: sessionData?.user !== undefined },
-  );
-
-  return (
-    <div className="flex flex-col items-center justify-center gap-4">
-      <p className="text-center text-2xl text-white">
-        {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
-        {secretMessage && <span> - {secretMessage}</span>}
-      </p>
-      <button
-        className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
-        onClick={sessionData ? () => void signOut() : () => void signIn()}
-      >
-        {sessionData ? "Sign out" : "Sign in"}
-      </button>
-    </div>
-  );
-};
