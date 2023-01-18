@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createPost } from "../../../utils/schema";
+import { createPost, updatePost } from "../../../utils/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const postRouter = createTRPCRouter({
@@ -15,5 +15,19 @@ export const postRouter = createTRPCRouter({
     .input(createPost)
     .mutation(async ({ input, ctx }) => {
       return await ctx.prisma.post.create({ data: { title: input.title } });
+    }),
+  updatePost: publicProcedure
+    .input(updatePost)
+    .mutation(async ({ input, ctx }) => {
+      const post = await ctx.prisma.post.findFirst({
+        where: { id: input.id },
+      });
+
+      if (!post) return null;
+
+      return await ctx.prisma.post.update({
+        where: { id: input.id },
+        data: { title: input.title },
+      });
     }),
 });
