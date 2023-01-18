@@ -64,3 +64,10 @@ model VerificationToken {
 
     @@unique([identifier, token])
 }
+
+model Post {
+    id        String   @id @default(cuid())
+    title     String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now())
+}
