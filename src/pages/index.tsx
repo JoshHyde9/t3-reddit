@@ -17,6 +17,12 @@ const Home: NextPage = () => {
     },
   });
 
+  const { mutate: deletePost, error } = api.post.deletePost.useMutation({
+    onSuccess: async () => {
+      await utils.post.invalidate();
+    },
+  });
+
   const posts = api.post.getAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
@@ -54,16 +60,30 @@ const Home: NextPage = () => {
           })}
         </div>
         {posts.data && (
-          <button
-            className="text-white"
-            onClick={() => {
-              if (!posts.data[0]) return;
+          <>
+            <button
+              className="text-white"
+              onClick={() => {
+                if (!posts.data[0]) return;
 
-              updatePost({ id: posts.data[0].id, title: "Post was updated" });
-            }}
-          >
-            Update Post
-          </button>
+                updatePost({ id: posts.data[0].id, title: "Post was updated" });
+              }}
+            >
+              Update Post
+            </button>
+            <button
+              className="text-white"
+              onClick={() => {
+                if (!posts.data[0]) return;
+
+                deletePost({ id: posts.data[0].id });
+              }}
+            >
+              Delete Post
+            </button>
+
+            {error && <p className="text-white">{error.message}</p>}
+          </>
         )}
       </main>
     </>

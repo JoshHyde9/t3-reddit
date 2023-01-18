@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createPost, updatePost } from "../../../utils/schema";
 import { createTRPCRouter, publicProcedure } from "../trpc";
@@ -29,5 +30,15 @@ export const postRouter = createTRPCRouter({
         where: { id: input.id },
         data: { title: input.title },
       });
+    }),
+  deletePost: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      try {
+        await ctx.prisma.post.delete({ where: { id: input.id } });
+      } catch (error) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Post not found." });
+      }
+      return true;
     }),
 });
