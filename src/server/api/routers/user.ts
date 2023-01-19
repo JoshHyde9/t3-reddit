@@ -1,3 +1,5 @@
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import { TRPCError } from "@trpc/server";
 import { hash } from "argon2";
 
 import { registerUser } from "../../../utils/schema";
@@ -8,12 +10,28 @@ export const userRouter = createTRPCRouter({
     .input(registerUser)
     .mutation(async ({ input, ctx }) => {
       const hashedPassword = await hash(input.password);
-      return await ctx.prisma.user.create({
-        data: {
-          username: input.username,
-          email: input.email,
-          password: hashedPassword,
-        },
-      });
+      try {
+        await ctx.prisma.user.create({
+          data: {
+            username: input.username,
+            email: input.email,
+            password: hashedPassword,
+          },
+        });
+      } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError) {
+          if (error.message.includes("email"))
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Email already in use.",
+            });
+
+          if (error.message.includes("username"))
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Username already is use.",
+            });
+        }
+      }
     }),
 });
