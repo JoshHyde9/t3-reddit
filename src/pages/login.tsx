@@ -12,8 +12,10 @@ const Login: NextPage = () => {
   const router = useRouter();
 
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (data: z.infer<typeof loginUser>) => {
+    setLoading(true);
     const result = await signIn("credentials", {
       ...data,
       redirect: false,
@@ -25,17 +27,21 @@ const Login: NextPage = () => {
     } else {
       await router.push("/");
     }
+    setLoading(false);
   };
 
   return (
-    <Form
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      onSubmit={handleLogin}
-      schema={loginUser}
-      className="flex flex-col"
-      buttonMessage="Login"
-      globalError={error}
-    />
+    <div className="mx-auto max-w-prose">
+      <Form
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        onSubmit={handleLogin}
+        schema={loginUser}
+        className="flex flex-col"
+        buttonMessage="Login"
+        globalError={error}
+        isLoading={loading}
+      />
+    </div>
   );
 };
 
