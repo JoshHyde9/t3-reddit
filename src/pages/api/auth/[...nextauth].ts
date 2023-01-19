@@ -3,7 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { verify } from "argon2";
 
 import { prisma } from "../../../server/db";
-import { baseUserSchema } from "../../../utils/schema";
+import { loginUser } from "../../../utils/schema";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -23,7 +23,7 @@ export const authOptions: AuthOptions = {
       },
       authorize: async (credentials) => {
         try {
-          const creds = await baseUserSchema.parseAsync(credentials);
+          const creds = await loginUser.parseAsync(credentials);
 
           const user = await prisma.user.findFirst({
             where: { username: creds.username },
