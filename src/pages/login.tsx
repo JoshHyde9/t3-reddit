@@ -22,12 +22,13 @@ const Login: NextPage = () => {
       callbackUrl: "/",
     });
 
+    setLoading(false);
+
     if (result?.error) {
       setError("Invalid credentials.");
     } else {
       await router.push("/");
     }
-    setLoading(false);
   };
 
   return (
