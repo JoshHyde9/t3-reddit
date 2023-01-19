@@ -50,7 +50,6 @@ export const authOptions: AuthOptions = {
     jwt: ({ token, user }) => {
       if (user) {
         token.userId = user.id;
-        token.username = user.username;
       }
 
       return token;
@@ -58,7 +57,6 @@ export const authOptions: AuthOptions = {
     session: ({ session, token }) => {
       if (token) {
         session.user.userId = token.userId;
-        session.user.username = token.username;
       }
 
       return session;
