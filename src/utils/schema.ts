@@ -20,3 +20,19 @@ export const baseUserSchema = z.object({
     .trim()
     .min(3, { message: "Password cannot be less than 3 characters" }),
 });
+
+export const registerUser = baseUserSchema
+  .extend({
+    email: z.string().email(),
+    confirmPassword: z
+      .string()
+      .trim()
+      .min(3, { message: "Password cannot be less than 3 characters" }),
+  })
+  .required()
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match.",
+    path: ["confirmPassword"],
+  });
+
+export type Register = z.infer<typeof registerUser>;

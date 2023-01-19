@@ -26,6 +26,7 @@ const Home: NextPage = () => {
   const posts = api.post.getAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
+
   return (
     <>
       <Head>
