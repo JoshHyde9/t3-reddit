@@ -15,6 +15,7 @@ type FormProps = {
   schema: (SchemaType & z.ZodEffects<any, any, any>) | AnyZodObject;
   onSubmit: (values: z.TypeOf<SchemaType>) => void;
   buttonMessage: string;
+  globalError?: string;
 };
 
 export const Form: FunctionComponent<FormProps> = ({
@@ -22,6 +23,7 @@ export const Form: FunctionComponent<FormProps> = ({
   schema,
   onSubmit,
   buttonMessage,
+  globalError: errorResponse,
 }) => {
   return (
     <CreateForm
@@ -29,7 +31,18 @@ export const Form: FunctionComponent<FormProps> = ({
       onSubmit={onSubmit}
       schema={schema}
       formProps={{ className: className }}
-      renderAfter={() => <button type="submit">{buttonMessage}</button>}
+      renderAfter={() => (
+        <>
+          <div>
+            {errorResponse && (
+              <p className={`${errorResponse ? "" : "hidden"}`}>
+                {errorResponse}
+              </p>
+            )}
+          </div>
+          <button type="submit">{buttonMessage}</button>
+        </>
+      )}
     />
   );
 };

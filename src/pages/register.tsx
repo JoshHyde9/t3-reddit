@@ -7,7 +7,7 @@ import { registerUser } from "../utils/schema";
 import { Form } from "../components/Form";
 
 const Register: NextPage = () => {
-  const { mutate: mutateRegisterUser } = api.user.register.useMutation();
+  const { mutate: mutateRegisterUser, error } = api.user.register.useMutation();
 
   const handleRegister = (data: z.infer<typeof registerUser>) => {
     mutateRegisterUser(data);
@@ -19,6 +19,7 @@ const Register: NextPage = () => {
       onSubmit={handleRegister}
       schema={registerUser}
       buttonMessage="Register"
+      globalError={error?.message}
     />
   );
 };

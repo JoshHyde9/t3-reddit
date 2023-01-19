@@ -10,7 +10,7 @@ export const TextField = () => {
         value={field.value ? field.value : ""}
         className="my-2"
         placeholder={placeholder}
-        type={placeholder?.includes("password") ? "password" : "text"}
+        type={placeholder?.includes("Password") ? "password" : "text"}
         onChange={(e) => {
           field.onChange(e.target.value);
         }}
