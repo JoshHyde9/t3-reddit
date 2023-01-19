@@ -11,13 +11,13 @@ export const updatePost = createPost.extend({
 });
 
 const usernameSchema = z
-  .string()
+  .string({ required_error: "Required." })
   .trim()
   .min(1, { message: "Username must not be empty." })
   .describe("Username: // Username...");
 
 const passwordSchema = z
-  .string()
+  .string({ required_error: "Required." })
   .trim()
   .min(3, { message: "Password cannot be less than 3 characters." })
   .describe("Password: // Password...");
@@ -30,10 +30,13 @@ export const loginUser = z.object({
 export const registerUser = z
   .object({
     username: usernameSchema,
-    email: z.string().email().describe("Email: // Email..."),
+    email: z
+      .string({ required_error: "Required." })
+      .email()
+      .describe("Email: // Email..."),
     password: passwordSchema,
     confirmPassword: z
-      .string()
+      .string({ required_error: "Required." })
       .trim()
       .min(3, { message: "Password cannot be less than 3 characters." })
       .describe("Confirm Password: // Confirm password..."),
