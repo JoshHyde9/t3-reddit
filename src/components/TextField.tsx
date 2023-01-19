@@ -12,7 +12,7 @@ export const TextField = () => {
           value={field.value ? field.value : ""}
           className="w-full appearance-none rounded-md border-2 border-teal-600 p-2 leading-tight transition-colors duration-300 ease-in-out focus:border-teal-500 focus:outline-none"
           placeholder={placeholder}
-          type={placeholder?.includes("Password") ? "password" : "text"}
+          type={placeholder?.includes("assword") ? "password" : "text"}
           onChange={(e) => {
             field.onChange(e.target.value);
           }}
