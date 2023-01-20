@@ -78,7 +78,7 @@ const MobileNav = ({
           <>
             <button
               className="my-4 text-left text-xl font-normal"
-              onClick={() => signOut({ redirect: false })}
+              onClick={() => signOut({ redirect: true, callbackUrl: "/" })}
             >
               Logout
             </button>
@@ -133,7 +133,7 @@ const NavBar: React.FC = () => {
             <>
               <button
                 onClick={() => {
-                  signOut({ redirect: false });
+                  signOut({ redirect: true, callbackUrl: "/" });
                 }}
                 className="relative transition duration-300 ease-in-out hover:text-teal-500"
               >

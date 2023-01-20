@@ -1,9 +1,17 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { TRPCError } from "@trpc/server";
 import { hash } from "argon2";
+import { z } from "zod";
+import jwt from "jsonwebtoken";
 
-import { registerUser } from "../../../utils/schema";
+import { passwordSchema, registerUser } from "../../../utils/schema";
+import { sendEmail } from "../../../utils/sendEmail";
 import { createTRPCRouter, publicProcedure } from "../trpc";
+import { env } from "../../../env/server.mjs";
+
+type JWTPayload = {
+  userId: string | null;
+} & jwt.JwtPayload;
 
 export const userRouter = createTRPCRouter({
   register: publicProcedure
@@ -33,5 +41,59 @@ export const userRouter = createTRPCRouter({
             });
         }
       }
+    }),
+  forgotPassword: publicProcedure
+    .input(z.object({ email: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: { email: input.email },
+      });
+
+      if (!user) return true;
+
+      const token = jwt.sign(
+        { userId: ctx.session?.user.userId },
+        env.NEXTAUTH_SECRET,
+        {
+          expiresIn: "3d",
+        }
+      );
+
+      await sendEmail({
+        to: input.email,
+        html: `<a href="${env.NEXTAUTH_URL}/forgot-password/${token}">reset password</a>`,
+      });
+
+      return true;
+    }),
+  changePassword: publicProcedure
+    .input(z.object({ token: z.string(), newPassword: passwordSchema }))
+    .mutation(async ({ input, ctx }) => {
+      const token = jwt.verify(input.token, env.NEXTAUTH_SECRET) as JWTPayload;
+
+      if (!token.userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Token expired.",
+        });
+      }
+
+      const user = await ctx.prisma.user.findUnique({
+        where: { id: token.userId },
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "User no longer exists.",
+        });
+      }
+
+      await ctx.prisma.user.update({
+        where: { id: token.userId },
+        data: { password: await hash(input.newPassword) },
+      });
+
+      return { username: user.username };
     }),
 });

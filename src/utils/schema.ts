@@ -16,11 +16,16 @@ const usernameSchema = z
   .min(1, { message: "Username must not be empty." })
   .describe("Username: // Username...");
 
-const passwordSchema = z
+export const passwordSchema = z
   .string({ required_error: "Required." })
   .trim()
   .min(3, { message: "Password cannot be less than 3 characters." })
   .describe("Password: // Password...");
+
+const emailSchema = z
+  .string({ required_error: "Required." })
+  .email()
+  .describe("Email: // Email...");
 
 export const loginUser = z.object({
   username: usernameSchema,
@@ -46,3 +51,7 @@ export const registerUser = z
     message: "Passwords don't match.",
     path: ["confirmPassword"],
   });
+
+export const forgotPassword = z.object({ newPassword: passwordSchema });
+
+export const sendEmailSchema = z.object({ email: emailSchema });
