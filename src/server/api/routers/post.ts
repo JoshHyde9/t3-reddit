@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createPost, updatePost } from "../../../utils/schema";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const postRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -12,12 +12,18 @@ export const postRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       return await ctx.prisma.post.findUnique({ where: { id: input.id } });
     }),
-  createPost: publicProcedure
+  createPost: protectedProcedure
     .input(createPost)
     .mutation(async ({ input, ctx }) => {
-      return await ctx.prisma.post.create({ data: { title: input.title } });
+      return await ctx.prisma.post.create({
+        data: {
+          title: input.title,
+          text: input.text,
+          creatorId: ctx.session.user.userId,
+        },
+      });
     }),
-  updatePost: publicProcedure
+  updatePost: protectedProcedure
     .input(updatePost)
     .mutation(async ({ input, ctx }) => {
       const post = await ctx.prisma.post.findFirst({
@@ -31,7 +37,7 @@ export const postRouter = createTRPCRouter({
         data: { title: input.title },
       });
     }),
-  deletePost: publicProcedure
+  deletePost: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
       try {

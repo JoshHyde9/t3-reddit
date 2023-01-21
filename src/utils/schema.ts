@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const createPost = z.object({
   title: z.string().trim().min(1, { message: "title must not be empty." }),
+  text: z.string().trim().min(1, { message: "text must not be empty." }),
 });
 
 export type CreatePost = z.infer<typeof createPost>;

@@ -37,7 +37,11 @@ const Home: NextPage = () => {
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center">
         <div>
-          <button onClick={() => createPost({ title: "Hello from client" })}>
+          <button
+            onClick={() =>
+              createPost({ title: "Hello from client", text: "This is cool" })
+            }
+          >
             Create post
           </button>
         </div>
@@ -47,6 +51,7 @@ const Home: NextPage = () => {
               <div key={post.id}>
                 <p>{post.id}</p>
                 <h1>{post.title}</h1>
+                <p>{post.text}</p>
                 <p>{post.createdAt.toString()}</p>
                 <p>{post.updatedAt.toString()}</p>
               </div>
@@ -59,7 +64,11 @@ const Home: NextPage = () => {
               onClick={() => {
                 if (!posts.data[0]) return;
 
-                updatePost({ id: posts.data[0].id, title: "Post was updated" });
+                updatePost({
+                  id: posts.data[0].id,
+                  title: "Post was updated",
+                  text: "Text field was updated as well.",
+                });
               }}
             >
               Update Post
