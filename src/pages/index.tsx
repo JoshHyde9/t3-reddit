@@ -4,26 +4,6 @@ import Head from "next/head";
 import { api } from "../utils/api";
 
 const Home: NextPage = () => {
-  const utils = api.useContext();
-
-  const { mutate: createPost } = api.post.createPost.useMutation({
-    onSuccess: async () => {
-      await utils.post.invalidate();
-    },
-  });
-
-  const { mutate: updatePost } = api.post.updatePost.useMutation({
-    onSuccess: async () => {
-      await utils.post.invalidate();
-    },
-  });
-
-  const { mutate: deletePost, error } = api.post.deletePost.useMutation({
-    onSuccess: async () => {
-      await utils.post.invalidate();
-    },
-  });
-
   const posts = api.post.getAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
@@ -37,15 +17,6 @@ const Home: NextPage = () => {
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center">
         <div>
-          <button
-            onClick={() =>
-              createPost({ title: "Hello from client", text: "This is cool" })
-            }
-          >
-            Create post
-          </button>
-        </div>
-        <div>
           {posts.data?.map((post) => {
             return (
               <div key={post.id}>
@@ -58,34 +29,6 @@ const Home: NextPage = () => {
             );
           })}
         </div>
-        {posts.data && (
-          <>
-            <button
-              onClick={() => {
-                if (!posts.data[0]) return;
-
-                updatePost({
-                  id: posts.data[0].id,
-                  title: "Post was updated",
-                  text: "Text field was updated as well.",
-                });
-              }}
-            >
-              Update Post
-            </button>
-            <button
-              onClick={() => {
-                if (!posts.data[0]) return;
-
-                deletePost({ id: posts.data[0].id });
-              }}
-            >
-              Delete Post
-            </button>
-
-            {error && <p>{error.message}</p>}
-          </>
-        )}
       </main>
     </>
   );

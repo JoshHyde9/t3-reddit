@@ -7,21 +7,24 @@ import { type Session } from "next-auth";
 const NavLink = ({
   to,
   children,
+  onClick,
 }: {
   to: string;
   children: React.ReactNode;
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
 }) => {
   const router = useRouter();
 
   return (
-    <a
+    <NextLink
       href={to}
-      className={`relative px-4 transition duration-300 ease-in-out ${
+      onClick={onClick}
+      className={`relative my-2 px-4 transition duration-300 ease-in-out md:my-0 ${
         router.asPath === to ? "text-teal-600" : "stroke  hover:text-teal-500"
       }`}
     >
       {children}
-    </a>
+    </NextLink>
   );
 };
 
@@ -34,55 +37,42 @@ const MobileNav = ({
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   session: Session | null;
 }) => {
-  const router = useRouter();
-
   return (
     <div
-      className={`absolute top-0 left-0 z-10 h-screen w-screen transform ${
+      className={`absolute top-0 left-0 z-10 h-screen w-screen transform bg-white ${
         open ? "-translate-x-0" : "-translate-x-full"
       } drop-shadow-md filter transition-transform duration-300 ease-in-out `}
     >
-      <div className="mt-9 ml-4 flex flex-col">
-        <NextLink
-          href="/"
-          className={`my-4 text-xl font-normal ${
-            router.asPath === "/" ? "text-teal-600" : ""
-          }`}
-          onClick={() => setOpen(!open)}
-        >
+      <div className="mt-9 ml-4 flex flex-col justify-start text-xl">
+        <NavLink to="/" onClick={() => setOpen(!open)}>
           Home
-        </NextLink>
+        </NavLink>
         {!session && (
           <>
-            <NextLink
-              href="/login"
-              className={`my-4 text-xl font-normal ${
-                router.asPath === "/login" ? "text-teal-600" : ""
-              }`}
-              onClick={() => setOpen(!open)}
-            >
+            <NavLink to="/login" onClick={() => setOpen(!open)}>
               Login
-            </NextLink>
-            <NextLink
-              href="/register"
-              className={`my-4 text-xl font-normal ${
-                router.asPath === "/register" ? "text-teal-600" : ""
-              }`}
-              onClick={() => setOpen(!open)}
-            >
+            </NavLink>
+            <NavLink to="/register" onClick={() => setOpen(!open)}>
               Register
-            </NextLink>
+            </NavLink>
           </>
         )}
         {session && (
           <>
+            <NavLink to="/post/create" onClick={() => setOpen(!open)}>
+              Create
+            </NavLink>
             <button
-              className="my-4 text-left text-xl font-normal"
-              onClick={() => signOut({ redirect: true, callbackUrl: "/" })}
+              className="my-2 px-4 text-left font-normal md:my-0"
+              onClick={async () =>
+                await signOut({ redirect: true, callbackUrl: "/" })
+              }
             >
               Logout
             </button>
-            <NextLink href="/account">{session.user.username}</NextLink>
+            <NavLink to="/account" onClick={() => setOpen(!open)}>
+              {session.user.username}
+            </NavLink>
           </>
         )}
       </div>
@@ -131,11 +121,12 @@ const NavBar: React.FC = () => {
           )}
           {session && (
             <>
+              <NavLink to="/post/create">Create</NavLink>
               <button
-                onClick={() => {
-                  signOut({ redirect: true, callbackUrl: "/" });
+                onClick={async () => {
+                  await signOut({ redirect: true, callbackUrl: "/" });
                 }}
-                className="relative transition duration-300 ease-in-out hover:text-teal-500"
+                className="relative px-4 transition duration-300 ease-in-out hover:text-teal-500"
               >
                 Logout
               </button>
