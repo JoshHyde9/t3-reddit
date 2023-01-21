@@ -4,9 +4,13 @@ import Head from "next/head";
 import { api } from "../utils/api";
 
 const Home: NextPage = () => {
-  const posts = api.post.getAll.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  });
+  const { data } = api.post.getAll.useInfiniteQuery(
+    { limit: 25 },
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      refetchOnWindowFocus: false,
+    }
+  );
 
   return (
     <>
@@ -17,17 +21,21 @@ const Home: NextPage = () => {
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center">
         <div>
-          {posts.data?.map((post) => {
-            return (
-              <div key={post.id}>
-                <p>{post.id}</p>
-                <h1>{post.title}</h1>
-                <p>{post.text}</p>
-                <p>{post.createdAt.toString()}</p>
-                <p>{post.updatedAt.toString()}</p>
-              </div>
-            );
-          })}
+          {data &&
+            data.pages.map((posts) => {
+              return (
+                <>
+                  {posts.items.map((post) => {
+                    return (
+                      <div key={post.id} className="my-4">
+                        <h1>{post.title}</h1>
+                        <p>{post.text}</p>
+                      </div>
+                    );
+                  })}
+                </>
+              );
+            })}
         </div>
       </main>
     </>
