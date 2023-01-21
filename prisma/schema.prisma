@@ -41,19 +41,6 @@ model Session {
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model User {
-    id       String @id @default(cuid())
-    username String @unique
-    email    String @unique
-    password String
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    accounts Account[]
-    sessions Session[]
-}
-
 model VerificationToken {
     identifier String
     token      String   @unique
@@ -62,9 +49,29 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
+model User {
+    id       String @id @default(cuid())
+    username String @unique
+    email    String @unique
+    password String
+    posts    Post[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    accounts Account[]
+    sessions Session[]
+}
+
 model Post {
-    id        String   @id @default(cuid())
+    id        String @id @default(cuid())
     title     String
+    text      String
+    points    Int    @default(0)
+    creatorId String
+
+    creator User @relation(fields: [creatorId], references: [id])
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
