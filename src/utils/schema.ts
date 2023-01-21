@@ -1,13 +1,27 @@
+import { createUniqueFieldSchema } from "@ts-react/form";
 import { z } from "zod";
 
-export const createPost = z.object({
-  title: z.string().trim().min(1, { message: "title must not be empty." }),
-  text: z.string().trim().min(1, { message: "text must not be empty." }),
+export const textAreaSchema = createUniqueFieldSchema(
+  z
+    .string({ required_error: "Required." })
+    .trim()
+    .min(5, { message: "Text must be at least 5 characters long." })
+    .describe("Text: // Text..."),
+  "textAreaId"
+);
+
+export const createPostSchema = z.object({
+  title: z
+    .string({ required_error: "Required." })
+    .trim()
+    .min(1, { message: "title must not be empty." })
+    .describe("Title: // Title..."),
+  text: textAreaSchema,
 });
 
-export type CreatePost = z.infer<typeof createPost>;
+export type CreatePost = z.infer<typeof createPostSchema>;
 
-export const updatePost = createPost.extend({
+export const updatePost = createPostSchema.extend({
   id: z.string(),
 });
 

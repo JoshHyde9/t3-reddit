@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { createPost, updatePost } from "../../../utils/schema";
+import { createPostSchema, updatePost } from "../../../utils/schema";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const postRouter = createTRPCRouter({
@@ -13,7 +13,7 @@ export const postRouter = createTRPCRouter({
       return await ctx.prisma.post.findUnique({ where: { id: input.id } });
     }),
   createPost: protectedProcedure
-    .input(createPost)
+    .input(createPostSchema)
     .mutation(async ({ input, ctx }) => {
       return await ctx.prisma.post.create({
         data: {

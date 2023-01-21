@@ -4,8 +4,14 @@ import { type FunctionComponent } from "react";
 import { z, type ZodType, type AnyZodObject } from "zod";
 
 import { TextField } from "./TextField";
+import { TextAreaField } from "./TextAreaField";
+import { textAreaSchema } from "../utils/schema";
 
-const mapping = [[z.string(), TextField]] as const;
+const mapping = [
+  [z.string(), TextField],
+  [textAreaSchema, TextAreaField],
+] as const;
+
 const CreateForm = createTsForm(mapping);
 
 type SchemaType = ZodType<any, any, any>;
