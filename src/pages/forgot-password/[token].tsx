@@ -1,13 +1,18 @@
 import { type NextPage } from "next";
-import { signIn } from "next-auth/react";
 import { type z } from "zod";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/router";
 
 import { api } from "../../utils/api";
 import { forgotPassword } from "../../utils/schema";
 
 import { Form } from "../../components/Form";
 
-export const ForgotPassword: NextPage<{ token: string }> = ({ token }) => {
+export const ForgotPassword: NextPage = () => {
+  const router = useRouter();
+
+  const { token } = router.query;
+
   const {
     data: returnedUser,
     mutate: changePassword,
@@ -17,7 +22,10 @@ export const ForgotPassword: NextPage<{ token: string }> = ({ token }) => {
   } = api.user.changePassword.useMutation();
 
   const handleSubmit = async (data: z.infer<typeof forgotPassword>) => {
-    changePassword({ token, newPassword: data.newPassword });
+    changePassword({
+      token: typeof token === "string" ? token : "",
+      newPassword: data.newPassword,
+    });
 
     if (isSuccess) {
       await signIn("credentials", {
@@ -41,12 +49,6 @@ export const ForgotPassword: NextPage<{ token: string }> = ({ token }) => {
       />
     </div>
   );
-};
-
-ForgotPassword.getInitialProps = ({ query }) => {
-  return {
-    token: query.token as string,
-  };
 };
 
 export default ForgotPassword;

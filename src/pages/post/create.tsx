@@ -5,9 +5,13 @@ import { CreatePost, createPostSchema } from "../../utils/schema";
 
 import { Form } from "../../components/Form";
 import { useRouter } from "next/router";
+import { useIsAuth } from "../../hooks/useIsAuth";
 
 const CreatePost: NextPage = () => {
+  useIsAuth();
+
   const router = useRouter();
+
   const {
     mutate: createPostMutation,
     isLoading,

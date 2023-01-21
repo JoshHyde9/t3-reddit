@@ -26,8 +26,10 @@ const Login: NextPage = () => {
 
     if (result?.error) {
       setError("Invalid credentials.");
+    } else if (typeof router.query.next === "string") {
+      await router.replace(router.query.next);
     } else {
-      await router.push("/");
+      await router.replace("/");
     }
   };
 
