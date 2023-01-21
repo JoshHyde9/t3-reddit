@@ -55,7 +55,7 @@ export const userRouter = createTRPCRouter({
         { userId: ctx.session?.user.userId },
         env.NEXTAUTH_SECRET,
         {
-          expiresIn: "3d",
+          expiresIn: "15m",
         }
       );
 
