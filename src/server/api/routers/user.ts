@@ -51,13 +51,9 @@ export const userRouter = createTRPCRouter({
 
       if (!user) return true;
 
-      const token = jwt.sign(
-        { userId: ctx.session?.user.userId },
-        env.NEXTAUTH_SECRET,
-        {
-          expiresIn: "15m",
-        }
-      );
+      const token = jwt.sign({ userId: user.id }, env.NEXTAUTH_SECRET, {
+        expiresIn: "15m",
+      });
 
       await sendEmail({
         to: input.email,
