@@ -7,7 +7,7 @@ export const postRouter = createTRPCRouter({
   getAll: publicProcedure
     .input(
       z.object({
-        limit: z.number().min(1).max(50),
+        limit: z.number().min(1).max(100).nullish(),
         cursor: z.string().nullish(),
       })
     )
@@ -15,20 +15,27 @@ export const postRouter = createTRPCRouter({
       const limit = input.limit ?? 50;
       const { cursor } = input;
 
+      const epic = cursor;
+
+      console.log(typeof epic);
+
       const items = await ctx.prisma.post.findMany({
         take: limit + 1,
+        cursor: cursor ? { id: cursor } : undefined,
         orderBy: {
           createdAt: "desc",
         },
       });
-
       let nextCursor: typeof cursor | undefined = undefined;
       if (items.length > limit) {
         const nextItem = items.pop();
-        nextCursor = nextItem!.createdAt.toString();
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        nextCursor = nextItem!.id;
       }
-
-      return { items, nextCursor };
+      return {
+        items,
+        nextCursor,
+      };
     }),
   getById: publicProcedure
     .input(z.object({ id: z.string() }))

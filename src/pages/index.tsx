@@ -23,17 +23,19 @@ const Home: NextPage = () => {
       </Head>
       <main className="mx-auto min-h-screen max-w-prose pb-10">
         <div>
-          {isLoading && <p>Loading...</p>}
-          {data &&
-            data.pages.map((posts) => (
-              <React.Fragment key="posts">
-                {posts.items.map((post) => (
-                  <PostCard key={post.id} post={post} />
-                ))}
-              </React.Fragment>
-            ))}
+          {isLoading && !data ? <p>Loading...</p> : null}
+          {data?.pages.map((pages, i) => (
+            <React.Fragment key={i}>
+              {pages.items.map((post) => (
+                <PostCard key={post.id} post={post} />
+              ))}
+            </React.Fragment>
+          ))}
         </div>
-        {!isLoading && (
+        {!isLoading &&
+        data?.pages[0] &&
+        data.pages[0].items &&
+        data.pages[0].items.length > 0 ? (
           <div className="flex justify-center">
             <button
               onClick={() => fetchNextPage()}
@@ -42,7 +44,7 @@ const Home: NextPage = () => {
               Load more
             </button>
           </div>
-        )}
+        ) : null}
       </main>
     </>
   );
