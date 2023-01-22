@@ -6,7 +6,9 @@ export const TextAreaField = () => {
 
   return (
     <div className="my-1">
-      <label>{label}</label>
+      <label className="mb-2 block text-xs font-extrabold uppercase tracking-wide">
+        {label}
+      </label>
       <div className="flex h-fit flex-col">
         <textarea
           value={field.value ? field.value : ""}
