@@ -14,27 +14,25 @@ export const ForgotPassword: NextPage = () => {
   const { token } = router.query;
 
   const {
-    data: returnedUser,
     mutate: changePassword,
     error,
     isLoading,
-    isSuccess,
-  } = api.user.changePassword.useMutation();
+  } = api.user.changePassword.useMutation({
+    onSuccess: async ({ username }, { newPassword }) => {
+      await signIn("credentials", {
+        username: username,
+        password: newPassword,
+        redirect: true,
+        callbackUrl: "/",
+      });
+    },
+  });
 
-  const handleSubmit = async (data: z.infer<typeof forgotPassword>) => {
+  const handleSubmit = (data: z.infer<typeof forgotPassword>) => {
     changePassword({
       token: typeof token === "string" ? token : "",
       newPassword: data.newPassword,
     });
-
-    if (isSuccess) {
-      await signIn("credentials", {
-        username: returnedUser.username,
-        password: data.newPassword,
-        redirect: true,
-        callbackUrl: "/",
-      });
-    }
   };
 
   return (

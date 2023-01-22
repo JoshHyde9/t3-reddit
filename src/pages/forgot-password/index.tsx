@@ -5,13 +5,15 @@ import { sendEmailSchema } from "../../utils/schema";
 
 import { Form } from "../../components/Form";
 import { api } from "../../utils/api";
+import { useState } from "react";
 
 const ForgotPassword: NextPage = () => {
-  const {
-    mutate: sendEmail,
-    isLoading,
-    isSuccess,
-  } = api.user.forgotPassword.useMutation();
+  const [isSuccess, setIsSuccess] = useState(false);
+  const { mutate: sendEmail, isLoading } = api.user.forgotPassword.useMutation({
+    onSuccess: () => {
+      setIsSuccess(true);
+    },
+  });
 
   const handleSubmit = (data: z.infer<typeof sendEmailSchema>) => {
     sendEmail({ email: data.email });

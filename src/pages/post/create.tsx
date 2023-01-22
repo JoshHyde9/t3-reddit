@@ -16,15 +16,14 @@ const CreatePost: NextPage = () => {
     mutate: createPostMutation,
     isLoading,
     error,
-    data: createdPost,
-  } = api.post.createPost.useMutation();
+  } = api.post.createPost.useMutation({
+    onSuccess: async ({ id }) => {
+      await router.replace(`/post/${id}`);
+    },
+  });
 
-  const onSubmit = async (data: CreatePost) => {
+  const onSubmit = (data: CreatePost) => {
     createPostMutation({ title: data.title, text: data.text });
-
-    if (createdPost) {
-      await router.replace(`/post/${createdPost.id}`);
-    }
   };
 
   return (

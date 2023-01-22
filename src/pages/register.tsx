@@ -16,7 +16,7 @@ const Register: NextPage = () => {
     error,
     isLoading,
   } = api.user.register.useMutation({
-    onSuccess: async (_, { username, password }) => {
+    onSuccess: async (data, { username, password }) => {
       await signIn("credentials", {
         username,
         password,
