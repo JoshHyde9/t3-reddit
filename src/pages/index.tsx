@@ -1,5 +1,6 @@
 import { type NextPage } from "next";
 import Head from "next/head";
+import React from "react";
 import { PostCard } from "../components/PostCard";
 
 import { api } from "../utils/api";
@@ -25,11 +26,11 @@ const Home: NextPage = () => {
           {isLoading && <p>Loading...</p>}
           {data &&
             data.pages.map((posts) => (
-              <>
+              <React.Fragment key="posts">
                 {posts.items.map((post) => (
                   <PostCard key={post.id} post={post} />
                 ))}
-              </>
+              </React.Fragment>
             ))}
         </div>
         {!isLoading && (
