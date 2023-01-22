@@ -4,6 +4,7 @@ import { createPostSchema, updatePost } from "../../../utils/schema";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const postRouter = createTRPCRouter({
+  // FIXME: Cursor is cooked.
   getAll: publicProcedure
     .input(
       z.object({
@@ -15,13 +16,9 @@ export const postRouter = createTRPCRouter({
       const limit = input.limit ?? 50;
       const { cursor } = input;
 
-      const epic = cursor;
-
-      console.log(typeof epic);
-
       const items = await ctx.prisma.post.findMany({
         take: limit + 1,
-        cursor: cursor ? { id: cursor } : undefined,
+        // cursor: cursor ? { id: cursor } : undefined,
         orderBy: {
           createdAt: "desc",
         },
