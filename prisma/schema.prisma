@@ -66,12 +66,11 @@ model User {
 }
 
 model Post {
-    id         String @id @default(cuid())
-    title      String
-    text       String
-    points     Int    @default(0)
-    voteStatus Int?
-    creatorId  String
+    id        String @id @default(cuid())
+    title     String
+    text      String
+    points    Int    @default(0)
+    creatorId String
 
     creator User @relation(fields: [creatorId], references: [id])
 
