@@ -54,7 +54,9 @@ model User {
     username String @unique
     email    String @unique
     password String
-    posts    Post[]
+
+    posts Post[]
+    votes Vote[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -72,6 +74,20 @@ model Post {
 
     creator User @relation(fields: [creatorId], references: [id])
 
+    votes Vote[]
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+}
+
+model Vote {
+    value Int
+
+    userId String
+    user   User   @relation(fields: [userId], references: [id])
+
+    postId String
+    post   Post   @relation(fields: [postId], references: [id])
+
+    @@id([userId, postId])
 }
