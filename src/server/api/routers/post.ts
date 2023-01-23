@@ -21,9 +21,7 @@ export const postRouter = createTRPCRouter({
         include: {
           creator: {
             select: {
-              id: true,
               username: true,
-              createdAt: true,
             },
           },
         },
@@ -114,7 +112,7 @@ export const postRouter = createTRPCRouter({
             where: { id: input.postId },
             data: {
               points: {
-                ...(realValue === 1 ? { increment: 1 } : { decrement: 1 }),
+                ...(realValue === 1 ? { increment: 2 } : { decrement: 2 }),
               },
             },
           }),

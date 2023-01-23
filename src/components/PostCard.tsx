@@ -6,9 +6,7 @@ export const PostCard = ({
 }: {
   post: Post & {
     creator: {
-      id: string;
       username: string;
-      createdAt: Date;
     };
   };
 }) => (
