@@ -26,9 +26,9 @@ export const Voting: FunctionComponent<VotingProps> = ({
           viewBox="0 0 24 24"
           className={`h-6 cursor-pointer ${
             voteStatus?.value === 1
-              ? "fill-[#ff4500] stroke-[#ff4500]"
+              ? "fill-upvote stroke-upvote"
               : "fill-none stroke-neutral-400"
-          } stroke-2 duration-300  hover:stroke-[#ff4500]`}
+          } stroke-2 duration-300  hover:stroke-upvote`}
         >
           <path d="M9 21V10H5l7-7 7 7h-4v11z"></path>
         </svg>
@@ -40,9 +40,9 @@ export const Voting: FunctionComponent<VotingProps> = ({
           viewBox="0 0 24 24"
           className={`h-6 rotate-180 cursor-pointer ${
             voteStatus?.value === -1
-              ? "fill-[#7193ff] stroke-[#7193ff]"
+              ? "fill-downvote stroke-downvote"
               : "fill-none stroke-neutral-400"
-          }  stroke-2  duration-300 hover:stroke-[#7193ff]`}
+          }  stroke-2  duration-300 hover:stroke-downvote`}
         >
           <path d="M9 21V10H5l7-7 7 7h-4v11z"></path>
         </svg>
