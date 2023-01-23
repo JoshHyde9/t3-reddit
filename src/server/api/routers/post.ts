@@ -52,7 +52,26 @@ export const postRouter = createTRPCRouter({
   getById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      return await ctx.prisma.post.findUnique({ where: { id: input.id } });
+      return await ctx.prisma.post.findUnique({
+        where: { id: input.id },
+        include: {
+          // Get the votes of the posts if the user is logged in
+          ...(ctx.session?.user
+            ? {
+                votes: {
+                  select: { value: true, postId: true },
+                  where: { userId: ctx.session.user.userId },
+                },
+              }
+            : {}),
+
+          creator: {
+            select: {
+              username: true,
+            },
+          },
+        },
+      });
     }),
   createPost: protectedProcedure
     .input(createPostSchema)
