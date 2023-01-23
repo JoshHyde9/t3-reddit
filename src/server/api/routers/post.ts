@@ -87,24 +87,106 @@ export const postRouter = createTRPCRouter({
       const isVotePos = input.value !== -1;
       const realValue = isVotePos ? 1 : -1;
 
-      await ctx.prisma.$transaction([
-        ctx.prisma.vote.create({
-          data: {
-            value: realValue,
-            userId: ctx.session.user.userId,
+      const vote = await ctx.prisma.vote.findUnique({
+        where: {
+          userId_postId: {
             postId: input.postId,
+            userId: ctx.session.user.userId,
           },
-        }),
+        },
+      });
 
-        ctx.prisma.post.update({
-          where: { id: input.postId },
-          data: {
-            points: {
-              ...(realValue === 1 ? { increment: 1 } : { decrement: 1 }),
+      // User has voted on the post before
+      // and they are changing their vote
+      if (vote && vote.value !== realValue) {
+        await ctx.prisma.$transaction([
+          ctx.prisma.vote.update({
+            data: { value: realValue },
+            where: {
+              userId_postId: {
+                postId: input.postId,
+                userId: ctx.session.user.userId,
+              },
             },
-          },
-        }),
-      ]);
+          }),
+
+          ctx.prisma.post.update({
+            where: { id: input.postId },
+            data: {
+              points: {
+                ...(realValue === 1 ? { increment: 1 } : { decrement: 1 }),
+              },
+            },
+          }),
+        ]);
+      } else if (!vote) {
+        // Has never voted before
+        // Create the vote and update the post's points count
+        await ctx.prisma.$transaction([
+          ctx.prisma.vote.create({
+            data: {
+              value: realValue,
+              userId: ctx.session.user.userId,
+              postId: input.postId,
+            },
+          }),
+
+          ctx.prisma.post.update({
+            where: { id: input.postId },
+            data: {
+              points: {
+                ...(realValue === 1 ? { increment: 1 } : { decrement: 1 }),
+              },
+            },
+          }),
+        ]);
+      } else {
+        if (realValue === 1) {
+          // User upvoted a post they have already upvoted
+          // Delete the vote and decrenebt the post's points count
+          await ctx.prisma.$transaction([
+            ctx.prisma.vote.delete({
+              where: {
+                userId_postId: {
+                  postId: input.postId,
+                  userId: ctx.session.user.userId,
+                },
+              },
+            }),
+
+            ctx.prisma.post.update({
+              where: { id: input.postId },
+              data: {
+                points: {
+                  decrement: 1,
+                },
+              },
+            }),
+          ]);
+        } else {
+          // User downvoted a post they have already downvoted
+          // Delete the vote and increment the post's points count
+          await ctx.prisma.$transaction([
+            ctx.prisma.vote.delete({
+              where: {
+                userId_postId: {
+                  postId: input.postId,
+                  userId: ctx.session.user.userId,
+                },
+              },
+            }),
+
+            ctx.prisma.post.update({
+              where: { id: input.postId },
+              data: {
+                points: {
+                  increment: 1,
+                },
+              },
+            }),
+          ]);
+        }
+      }
 
       return true;
     }),
