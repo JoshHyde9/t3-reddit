@@ -81,4 +81,31 @@ export const postRouter = createTRPCRouter({
       }
       return true;
     }),
+  vote: protectedProcedure
+    .input(z.object({ postId: z.string(), value: z.number().int() }))
+    .mutation(async ({ input, ctx }) => {
+      const isVotePos = input.value !== -1;
+      const realValue = isVotePos ? 1 : -1;
+
+      await ctx.prisma.$transaction([
+        ctx.prisma.vote.create({
+          data: {
+            value: realValue,
+            userId: ctx.session.user.userId,
+            postId: input.postId,
+          },
+        }),
+
+        ctx.prisma.post.update({
+          where: { id: input.postId },
+          data: {
+            points: {
+              ...(realValue === 1 ? { increment: 1 } : { decrement: 1 }),
+            },
+          },
+        }),
+      ]);
+
+      return true;
+    }),
 });
