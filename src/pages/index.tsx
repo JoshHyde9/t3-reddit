@@ -6,6 +6,7 @@ import { PostCard } from "../components/PostCard";
 import { api } from "../utils/api";
 
 const Home: NextPage = () => {
+  const utils = api.useContext();
   const { data, isLoading, fetchNextPage } = api.post.getAll.useInfiniteQuery(
     { limit: 10 },
     {
@@ -13,6 +14,12 @@ const Home: NextPage = () => {
       refetchOnWindowFocus: false,
     }
   );
+
+  const { mutate } = api.post.vote.useMutation({
+    onSettled: async () => {
+      await utils.post.getAll.invalidate();
+    },
+  });
 
   return (
     <>
@@ -22,6 +29,15 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="mx-auto min-h-screen max-w-prose pb-10">
+        <div>
+          <button
+            onClick={() =>
+              mutate({ value: -1, postId: "cng3xlyhe9042fqzkbw67iknv" })
+            }
+          >
+            Vote post
+          </button>
+        </div>
         <div>
           {isLoading && !data ? <p>Loading...</p> : null}
           {data?.pages.map((pages, i) => (
