@@ -148,7 +148,7 @@ export const postRouter = createTRPCRouter({
       } else {
         if (realValue === 1) {
           // User upvoted a post they have already upvoted
-          // Delete the vote and decrenebt the post's points count
+          // Delete the vote and decrement the post's points count
           await ctx.prisma.$transaction([
             ctx.prisma.vote.delete({
               where: {
