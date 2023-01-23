@@ -19,13 +19,16 @@ export const postRouter = createTRPCRouter({
         take: limit + 1,
         // cursor: cursor ? { createdAt: cursor } : undefined,
         include: {
-          votes: {
-            select: {
-              value: true,
-              postId: true,
-            },
-            where: { userId: ctx.session?.user.userId },
-          },
+          // Get the votes of the posts if the user is logged in
+          ...(ctx.session?.user
+            ? {
+                votes: {
+                  select: { value: true, postId: true },
+                  where: { userId: ctx.session.user.userId },
+                },
+              }
+            : {}),
+
           creator: {
             select: {
               username: true,

@@ -30,7 +30,7 @@ const Home: NextPage = () => {
                 <PostCard
                   key={post.id}
                   post={post}
-                  voteStatus={post.votes.find(
+                  voteStatus={post.votes?.find(
                     (status) => post.id === status.postId
                   )}
                 />
