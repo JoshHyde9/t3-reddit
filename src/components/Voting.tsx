@@ -33,7 +33,17 @@ export const Voting: FunctionComponent<VotingProps> = ({
           <path d="M9 21V10H5l7-7 7 7h-4v11z"></path>
         </svg>
       </button>
-      <p className="text-sm font-semibold">{points}</p>
+      <p
+        className={`text-sm font-semibold ${
+          voteStatus?.value === -1
+            ? "text-downvote"
+            : voteStatus?.value === 1
+            ? "text-upvote"
+            : ""
+        }`}
+      >
+        {points}
+      </p>
       <button onClick={() => vote({ postId, value: -1 })}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
