@@ -12,13 +12,21 @@ export const postRouter = createTRPCRouter({
         cursor: z.string().nullish(),
       })
     )
-    .query(async ({ input, ctx }) => {
+    .query(async ({ ctx, input }) => {
       const limit = input.limit ?? 50;
       const { cursor } = input;
-
       const items = await ctx.prisma.post.findMany({
         take: limit + 1,
-        // cursor: cursor ? { id: cursor } : undefined,
+        // cursor: cursor ? { createdAt: cursor } : undefined,
+        include: {
+          creator: {
+            select: {
+              id: true,
+              username: true,
+              createdAt: true,
+            },
+          },
+        },
         orderBy: {
           createdAt: "desc",
         },
@@ -26,8 +34,7 @@ export const postRouter = createTRPCRouter({
       let nextCursor: typeof cursor | undefined = undefined;
       if (items.length > limit) {
         const nextItem = items.pop();
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        nextCursor = nextItem!.id;
+        nextCursor = nextItem!.createdAt.toString();
       }
       return {
         items,
