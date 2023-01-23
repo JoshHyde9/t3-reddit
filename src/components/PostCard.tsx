@@ -3,15 +3,17 @@ import { Voting } from "./Voting";
 
 export const PostCard = ({
   post,
+  voteStatus,
 }: {
   post: Post & {
     creator: {
       username: string;
     };
   };
+  voteStatus: { value: number; postId: string } | undefined;
 }) => (
   <div className="my-4 flex flex-row gap-2 rounded-md border">
-    <Voting points={post.points} postId={post.id} />
+    <Voting points={post.points} postId={post.id} voteStatus={voteStatus} />
     <div className="p-1 pr-2">
       <span className="text-sm">u/{post.creator.username}</span>
       <h1 className="text-lg font-semibold">{post.title}</h1>

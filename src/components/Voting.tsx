@@ -4,9 +4,14 @@ import { api } from "../utils/api";
 type VotingProps = {
   points: number;
   postId: string;
+  voteStatus: { value: number; postId: string } | undefined;
 };
 
-export const Voting: FunctionComponent<VotingProps> = ({ points, postId }) => {
+export const Voting: FunctionComponent<VotingProps> = ({
+  points,
+  postId,
+  voteStatus,
+}) => {
   const utils = api.useContext();
   const { mutate: vote } = api.post.vote.useMutation({
     onSettled: async () => {
@@ -19,7 +24,11 @@ export const Voting: FunctionComponent<VotingProps> = ({ points, postId }) => {
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
-          className="h-6 cursor-pointer fill-none stroke-neutral-400 stroke-2 duration-300  hover:stroke-[#cc3700]"
+          className={`h-6 cursor-pointer ${
+            voteStatus?.value === 1
+              ? "fill-[#ff4500] stroke-[#ff4500]"
+              : "fill-none stroke-neutral-400"
+          } stroke-2 duration-300  hover:stroke-[#ff4500]`}
         >
           <path d="M9 21V10H5l7-7 7 7h-4v11z"></path>
         </svg>
@@ -29,7 +38,11 @@ export const Voting: FunctionComponent<VotingProps> = ({ points, postId }) => {
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
-          className="h-6 rotate-180 cursor-pointer fill-none stroke-neutral-400 stroke-2  duration-300 hover:stroke-[#5a75cc]"
+          className={`h-6 rotate-180 cursor-pointer ${
+            voteStatus?.value === -1
+              ? "fill-[#7193ff] stroke-[#7193ff]"
+              : "fill-none stroke-neutral-400"
+          }  stroke-2  duration-300 hover:stroke-[#7193ff]`}
         >
           <path d="M9 21V10H5l7-7 7 7h-4v11z"></path>
         </svg>

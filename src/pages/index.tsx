@@ -27,7 +27,13 @@ const Home: NextPage = () => {
           {data?.pages.map((pages, i) => (
             <React.Fragment key={i}>
               {pages.items.map((post) => (
-                <PostCard key={post.id} post={post} />
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  voteStatus={post.votes.find(
+                    (status) => post.id === status.postId
+                  )}
+                />
               ))}
             </React.Fragment>
           ))}
