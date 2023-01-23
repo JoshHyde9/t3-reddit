@@ -12,6 +12,8 @@ import { createInnerTRPCContext } from "../../server/api/trpc";
 import { api } from "../../utils/api";
 
 import { Voting } from "../../components/Voting";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ id: string }>
@@ -49,7 +51,19 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
-  const postQuery = api.post.getById.useQuery({ id: props.id });
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  const { mutate: deletePost } = api.post.deletePost.useMutation({
+    onSuccess: async () => {
+      await router.replace("/");
+    },
+  });
+
+  const postQuery = api.post.getById.useQuery(
+    { id: props.id },
+    { refetchOnWindowFocus: false }
+  );
 
   if (postQuery.status !== "success") {
     return <p>Loading...</p>;
@@ -69,10 +83,17 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
           postId={post.id}
           voteStatus={post.votes?.find((status) => post.id === status.postId)}
         />
-        <div className="p-1 pr-2">
+        <div className="flex-auto p-1 pr-2">
           <span className="text-sm">u/{post.creator.username}</span>
           <h1 className="text-lg font-semibold">{post.title}</h1>
           <p className="pt-2">{post.text}</p>
+          <div className="mt-4 flex">
+            {session && session.user.userId === post.creatorId && (
+              <button onClick={() => deletePost({ id: post.id })}>
+                Delete post
+              </button>
+            )}
+          </div>
         </div>
       </article>
     </section>
