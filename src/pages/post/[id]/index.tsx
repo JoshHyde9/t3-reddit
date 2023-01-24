@@ -4,16 +4,17 @@ import type {
   GetStaticPropsContext,
   InferGetServerSidePropsType,
 } from "next";
-import { prisma } from "../../server/db";
+import { prisma } from "../../../server/db";
 import superjson from "superjson";
-import { appRouter } from "../../server/api/root";
-import { createInnerTRPCContext } from "../../server/api/trpc";
+import { appRouter } from "../../../server/api/root";
+import { createInnerTRPCContext } from "../../../server/api/trpc";
 
-import { api } from "../../utils/api";
+import { api } from "../../../utils/api";
 
-import { Voting } from "../../components/Voting";
+import { Voting } from "../../../components/Voting";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ id: string }>
@@ -87,11 +88,14 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
           <span className="text-sm">u/{post.creator.username}</span>
           <h1 className="text-lg font-semibold">{post.title}</h1>
           <p className="pt-2">{post.text}</p>
-          <div className="mt-4 flex">
-            {session && session.user.userId === post.creatorId && (
-              <button onClick={() => deletePost({ id: post.id })}>
-                Delete post
-              </button>
+          <div className="mt-4 flex gap-x-2">
+            {session?.user.userId === post.creatorId && (
+              <>
+                <button onClick={() => deletePost({ id: post.id })}>
+                  Delete
+                </button>
+                <Link href={`/post/${post.id}/edit`}>Edit</Link>
+              </>
             )}
           </div>
         </div>

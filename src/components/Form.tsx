@@ -23,6 +23,7 @@ type FormProps = {
   buttonMessage: string;
   globalError?: string;
   isLoading: boolean;
+  initialData?: { title: string; text: string };
 };
 
 export const Form: FunctionComponent<FormProps> = ({
@@ -32,12 +33,14 @@ export const Form: FunctionComponent<FormProps> = ({
   buttonMessage,
   globalError: errorResponse,
   isLoading,
+  initialData,
 }) => {
   return (
     <CreateForm
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onSubmit={onSubmit}
       schema={schema}
+      defaultValues={initialData}
       formProps={{ className }}
       renderAfter={() => (
         <>

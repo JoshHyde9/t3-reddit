@@ -21,10 +21,6 @@ export const createPostSchema = z.object({
 
 export type CreatePost = z.infer<typeof createPostSchema>;
 
-export const updatePost = createPostSchema.extend({
-  id: z.string(),
-});
-
 const usernameSchema = z
   .string({ required_error: "Required." })
   .trim()
@@ -66,6 +62,25 @@ export const registerUser = z
     message: "Passwords don't match.",
     path: ["confirmPassword"],
   });
+
+export const editPost = z.object({
+  id: z.string(),
+  title: z
+    .string()
+    .trim()
+    .min(1, { message: "title must not be empty." })
+    .describe("Title: // Title..."),
+  text: textAreaSchema,
+});
+
+export const editPostSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(1, { message: "title must not be empty." })
+    .describe("Title: // Title..."),
+  text: textAreaSchema,
+});
 
 export const forgotPassword = z.object({ newPassword: passwordSchema });
 

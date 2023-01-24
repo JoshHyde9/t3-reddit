@@ -1,6 +1,7 @@
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { TRPCError } from "@trpc/server";
 import { undefined, z } from "zod";
-import { createPostSchema, updatePost } from "../../../utils/schema";
+import { createPostSchema, editPost } from "../../../utils/schema";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const postRouter = createTRPCRouter({
@@ -96,18 +97,23 @@ export const postRouter = createTRPCRouter({
       return post;
     }),
   updatePost: protectedProcedure
-    .input(updatePost)
+    .input(editPost)
     .mutation(async ({ input, ctx }) => {
-      const post = await ctx.prisma.post.findFirst({
-        where: { id: input.id },
-      });
-
-      if (!post) return null;
-
-      return await ctx.prisma.post.update({
-        where: { id: input.id },
-        data: { title: input.title },
-      });
+      try {
+        await ctx.prisma.post.update({
+          where: {
+            id_creatorId: { creatorId: ctx.session.user.userId, id: input.id },
+          },
+          data: { title: input.title, text: input.text },
+        });
+      } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Not allowed to edit someone elses post.",
+          });
+        }
+      }
     }),
   deletePost: protectedProcedure
     .input(z.object({ id: z.string() }))
