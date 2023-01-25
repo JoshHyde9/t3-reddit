@@ -1,7 +1,7 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { createCommentSchema } from "../../../utils/schema";
+import { createCommentSchema, editCommentSchema } from "../../../utils/schema";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const commentRouter = createTRPCRouter({
@@ -55,5 +55,30 @@ export const commentRouter = createTRPCRouter({
       }
 
       return true;
+    }),
+  updateComment: protectedProcedure
+    .input(editCommentSchema)
+    .mutation(async ({ input, ctx }) => {
+      try {
+        await ctx.prisma.comment.update({
+          where: {
+            id_userId: {
+              id: input.commentId,
+              userId: ctx.session.user.userId,
+            },
+          },
+          data: {
+            edited: true,
+            message: input.message,
+          },
+        });
+      } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Not allowed to delete someone else's comment.",
+          });
+        }
+      }
     }),
 });
