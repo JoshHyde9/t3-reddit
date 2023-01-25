@@ -17,10 +17,16 @@ import { createInnerTRPCContext } from "../../../server/api/trpc";
 import { prisma } from "../../../server/db";
 
 import { api } from "../../../utils/api";
-import { createComment, type createCommentSchema } from "../../../utils/schema";
+import {
+  createComment,
+  type editCommentSchema,
+  type createCommentSchema,
+} from "../../../utils/schema";
 
 import { Form } from "../../../components/Form";
 import { Voting } from "../../../components/Voting";
+import { ReplyEdit } from "../../../components/comment/ReplyEdit";
+import { Comment } from "../../../components/comment/Comment";
 
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ id: string }>
@@ -62,6 +68,7 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
   const router = useRouter();
   const utils = api.useContext();
   const [open, setOpen] = useState<null | number>(null);
+  const [edit, setEdit] = useState<null | number>(null);
 
   const { mutate: deletePost } = api.post.deletePost.useMutation({
     onSuccess: async () => {
@@ -83,6 +90,20 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
         setOpen(null);
       },
     });
+
+  const { mutate: mutateEditComment, isLoading: isEditCommentLoading } =
+    api.comment.updateComment.useMutation({
+      onSuccess: async () => {
+        await utils.post.invalidate();
+        setEdit(null);
+      },
+    });
+
+  const { mutate: deleteComment } = api.comment.deleteComment.useMutation({
+    onSuccess: async () => {
+      await utils.post.invalidate();
+    },
+  });
 
   const postQuery = api.post.getById.useQuery(
     { id: props.id },
@@ -114,6 +135,16 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
     });
   };
 
+  const handleEditComment = (
+    data: z.infer<typeof editCommentSchema>,
+    commentId: string
+  ) => {
+    mutateEditComment({
+      message: data.message,
+      commentId,
+    });
+  };
+
   return (
     <section className="mx-auto max-w-prose">
       <article className="my-4 flex flex-row gap-2 rounded-md border">
@@ -139,6 +170,9 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
         </div>
       </article>
       <section>
+        <p>{post.comments.length} comments</p>
+      </section>
+      <section>
         {session?.user && (
           <Form
             onSubmit={handleCreateComment}
@@ -157,43 +191,66 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
                   <h1 className="font-semibold">{comment.user.username}</h1>
                   <span>&#x2022;</span>
                   <p>{formatDistanceToNow(comment.createdAt)} ago</p>
+                  {comment.edited && (
+                    <>
+                      <span>&#x2022;</span>
+                      <p>(edited)</p>
+                    </>
+                  )}
                 </div>
                 <p>{comment.message}</p>
                 <div className="flex gap-x-2">
-                  <p>{comment._count.votes}</p>
                   <button
-                    onClick={() =>
-                      setOpen((prevOpen) => (prevOpen === i ? null : i))
-                    }
+                    onClick={() => {
+                      setEdit(null);
+                      setOpen((prevOpen) => (prevOpen === i ? null : i));
+                    }}
                   >
                     Reply
                   </button>
+                  {session?.user.userId === comment.userId && (
+                    <>
+                      <button
+                        onClick={() => {
+                          setOpen(null);
+                          setEdit((prevEdit) => (prevEdit === i ? null : i));
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button onClick={() => deleteComment({ id: comment.id })}>
+                        Delete
+                      </button>
+                    </>
+                  )}
                 </div>
                 <>
                   {open === i && (
-                    <Form
-                      className="flex flex-col"
+                    <ReplyEdit
+                      commentUsername={comment.user.username}
+                      isLoading={isCreateReplyLoading}
+                      schema={createComment}
                       onSubmit={(data: z.infer<typeof createCommentSchema>) =>
                         handleCreateReply(data, comment.id)
                       }
+                    />
+                  )}
+                  {edit === i && (
+                    <ReplyEdit
+                      editing={true}
+                      isLoading={isEditCommentLoading}
                       schema={createComment}
-                      isLoading={isCreateReplyLoading}
-                      buttonMessage="Create reply"
+                      onSubmit={(data: z.infer<typeof editCommentSchema>) =>
+                        handleEditComment(data, comment.id)
+                      }
                     />
                   )}
                   {comment.replies.map((reply, j) => (
-                    <div key={j} className="m-2 border-l-2 border-gray-300">
-                      <div className="ml-4">
-                        <div className="flex gap-2">
-                          <h1 className="font-semibold">
-                            {comment.user.username}
-                          </h1>
-                          <span>&#x2022;</span>
-                          <p>{formatDistanceToNow(reply.createdAt)} ago</p>
-                        </div>
-                        <p>{reply.message}</p>
-                      </div>
-                    </div>
+                    <Comment
+                      key={j}
+                      reply={reply}
+                      creatorUsername={comment.user.username}
+                    />
                   ))}
                 </>
               </div>

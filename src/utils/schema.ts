@@ -93,3 +93,7 @@ export const createComment = z.object({
 export const createCommentSchema = createComment.extend({
   postId: z.string(),
 });
+
+export const editCommentSchema = createComment.extend({
+  commentId: z.string(),
+});
