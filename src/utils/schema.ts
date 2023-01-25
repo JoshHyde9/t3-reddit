@@ -5,7 +5,7 @@ export const textAreaSchema = createUniqueFieldSchema(
   z
     .string({ required_error: "Required." })
     .trim()
-    .min(5, { message: "Text must be at least 5 characters long." })
+    .min(1, { message: "Text must not be empty." })
     .describe("Text: // Text..."),
   "textAreaId"
 );
@@ -85,3 +85,11 @@ export const editPostSchema = z.object({
 export const forgotPassword = z.object({ newPassword: passwordSchema });
 
 export const sendEmailSchema = z.object({ email: emailSchema });
+
+export const createComment = z.object({
+  message: textAreaSchema,
+});
+
+export const createCommentSchema = createComment.extend({
+  postId: z.string(),
+});

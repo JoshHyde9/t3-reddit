@@ -23,7 +23,7 @@ type FormProps = {
   buttonMessage: string;
   globalError?: string;
   isLoading: boolean;
-  initialData?: { title: string; text: string };
+  initialData?: Record<string, string>;
 };
 
 export const Form: FunctionComponent<FormProps> = ({

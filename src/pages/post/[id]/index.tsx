@@ -1,20 +1,26 @@
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
+import { useState } from "react";
+import { formatDistanceToNow } from "date-fns";
 import type {
   GetStaticPaths,
   GetStaticPropsContext,
   InferGetServerSidePropsType,
 } from "next";
-import { prisma } from "../../../server/db";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import superjson from "superjson";
+import type { z } from "zod";
+
 import { appRouter } from "../../../server/api/root";
 import { createInnerTRPCContext } from "../../../server/api/trpc";
+import { prisma } from "../../../server/db";
 
 import { api } from "../../../utils/api";
+import { createComment, type createCommentSchema } from "../../../utils/schema";
 
+import { Form } from "../../../components/Form";
 import { Voting } from "../../../components/Voting";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
-import Link from "next/link";
 
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ id: string }>
@@ -54,12 +60,29 @@ export const getStaticPaths: GetStaticPaths = async () => {
 const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
   const { data: session } = useSession();
   const router = useRouter();
+  const utils = api.useContext();
+  const [open, setOpen] = useState<null | number>(null);
 
   const { mutate: deletePost } = api.post.deletePost.useMutation({
     onSuccess: async () => {
       await router.replace("/");
     },
   });
+
+  const { mutate: mutateCreateComment, isLoading: isCreateCommentLoading } =
+    api.comment.createComment.useMutation({
+      onSuccess: async () => {
+        await utils.post.invalidate();
+      },
+    });
+
+  const { mutate: mutateCreateReply, isLoading: isCreateReplyLoading } =
+    api.comment.createReply.useMutation({
+      onSuccess: async () => {
+        await utils.post.invalidate();
+        setOpen(null);
+      },
+    });
 
   const postQuery = api.post.getById.useQuery(
     { id: props.id },
@@ -75,6 +98,21 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
   if (!post) {
     return <p>Post not found.</p>;
   }
+
+  const handleCreateComment = (data: z.infer<typeof createCommentSchema>) => {
+    mutateCreateComment({ postId: post.id, message: data.message });
+  };
+
+  const handleCreateReply = (
+    data: z.infer<typeof createCommentSchema>,
+    commentId: string
+  ) => {
+    mutateCreateReply({
+      message: data.message,
+      postId: post.id,
+      id: commentId,
+    });
+  };
 
   return (
     <section className="mx-auto max-w-prose">
@@ -100,6 +138,68 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
           </div>
         </div>
       </article>
+      <section>
+        {session?.user && (
+          <Form
+            onSubmit={handleCreateComment}
+            className="mb-10 flex flex-col"
+            schema={createComment}
+            isLoading={isCreateCommentLoading}
+            buttonMessage="Create comment"
+          />
+        )}
+        {post.comments
+          .filter((comment) => !comment.commentId)
+          .map((comment, i) => (
+            <div key={i} className="my-5 border-l-2 border-gray-300">
+              <div className="ml-4">
+                <div className="flex gap-2">
+                  <h1 className="font-semibold">{comment.user.username}</h1>
+                  <span>&#x2022;</span>
+                  <p>{formatDistanceToNow(comment.createdAt)} ago</p>
+                </div>
+                <p>{comment.message}</p>
+                <div className="flex gap-x-2">
+                  <p>{comment._count.votes}</p>
+                  <button
+                    onClick={() =>
+                      setOpen((prevOpen) => (prevOpen === i ? null : i))
+                    }
+                  >
+                    Reply
+                  </button>
+                </div>
+                <>
+                  {open === i && (
+                    <Form
+                      className="flex flex-col"
+                      onSubmit={(data: z.infer<typeof createCommentSchema>) =>
+                        handleCreateReply(data, comment.id)
+                      }
+                      schema={createComment}
+                      isLoading={isCreateReplyLoading}
+                      buttonMessage="Create reply"
+                    />
+                  )}
+                  {comment.replies.map((reply, j) => (
+                    <div key={j} className="m-2 border-l-2 border-gray-300">
+                      <div className="ml-4">
+                        <div className="flex gap-2">
+                          <h1 className="font-semibold">
+                            {comment.user.username}
+                          </h1>
+                          <span>&#x2022;</span>
+                          <p>{formatDistanceToNow(reply.createdAt)} ago</p>
+                        </div>
+                        <p>{reply.message}</p>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              </div>
+            </div>
+          ))}
+      </section>
     </section>
   );
 };

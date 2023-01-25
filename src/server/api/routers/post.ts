@@ -71,6 +71,43 @@ export const postRouter = createTRPCRouter({
               username: true,
             },
           },
+          comments: {
+            select: {
+              id: true,
+              message: true,
+              edited: true,
+              createdAt: true,
+              commentId: true,
+              replies: {
+                where: {
+                  postId: input.id,
+                },
+                select: {
+                  message: true,
+                  edited: true,
+                  user: {
+                    select: {
+                      username: true,
+                    },
+                  },
+                  createdAt: true,
+                },
+              },
+              _count: {
+                select: {
+                  votes: true,
+                },
+              },
+              user: {
+                select: {
+                  username: true,
+                },
+              },
+            },
+            orderBy: {
+              createdAt: "desc",
+            },
+          },
         },
       });
     }),
@@ -129,8 +166,6 @@ export const postRouter = createTRPCRouter({
           },
         });
       } catch (error) {
-        console.log(error);
-
         throw new TRPCError({ code: "NOT_FOUND", message: "Post not found." });
       }
       return true;

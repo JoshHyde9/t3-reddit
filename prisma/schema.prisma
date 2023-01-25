@@ -55,8 +55,9 @@ model User {
     email    String @unique
     password String
 
-    posts Post[]
-    votes Vote[]
+    posts    Post[]
+    votes    Vote[]
+    comments Comment[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -74,7 +75,8 @@ model Post {
 
     creator User @relation(fields: [creatorId], references: [id])
 
-    votes Vote[]
+    votes    Vote[]
+    comments Comment[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -83,6 +85,7 @@ model Post {
 }
 
 model Vote {
+    id    String? @default(cuid())
     value Int
 
     userId String
@@ -91,5 +94,29 @@ model Vote {
     postId String
     post   Post   @relation(fields: [postId], references: [id])
 
+    comment   Comment? @relation(fields: [commentId], references: [id])
+    commentId String?
+
     @@id([userId, postId])
+}
+
+model Comment {
+    id      String  @id @default(cuid())
+    message String
+    edited  Boolean @default(false)
+
+    votes Vote[]
+
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    postId String
+    post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+    comment   Comment?  @relation("Reply", fields: [commentId], references: [id], onDelete: Cascade)
+    replies   Comment[] @relation("Reply")
+    commentId String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
