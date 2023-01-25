@@ -78,6 +78,7 @@ export const postRouter = createTRPCRouter({
               edited: true,
               createdAt: true,
               commentId: true,
+              userId: true,
               replies: {
                 where: {
                   postId: input.id,
@@ -87,15 +88,11 @@ export const postRouter = createTRPCRouter({
                   edited: true,
                   user: {
                     select: {
+                      id: true,
                       username: true,
                     },
                   },
                   createdAt: true,
-                },
-              },
-              _count: {
-                select: {
-                  votes: true,
                 },
               },
               user: {
