@@ -1,6 +1,5 @@
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 import { useState } from "react";
-import { formatDistanceToNow } from "date-fns";
 import type {
   GetStaticPaths,
   GetStaticPropsContext,
@@ -25,7 +24,6 @@ import {
 
 import { Form } from "../../../components/Form";
 import { Voting } from "../../../components/Voting";
-import { ReplyEdit } from "../../../components/comment/ReplyEdit";
 import { Comment } from "../../../components/comment/Comment";
 
 export const getStaticProps = async (
@@ -67,8 +65,8 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
   const { data: session } = useSession();
   const router = useRouter();
   const utils = api.useContext();
-  const [open, setOpen] = useState<null | number>(null);
-  const [edit, setEdit] = useState<null | number>(null);
+  const [open, setOpen] = useState<null | string>(null);
+  const [edit, setEdit] = useState<null | string>(null);
 
   const { mutate: deletePost } = api.post.deletePost.useMutation({
     onSuccess: async () => {
@@ -185,81 +183,20 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
         {post.comments
           .filter((comment) => !comment.commentId)
           .map((comment, i) => (
-            <div key={i} className="my-5 border-l-2 border-gray-300">
-              <div className="ml-4">
-                <div className="flex gap-2">
-                  <h1 className="font-semibold">{comment.user.username}</h1>
-                  <span>&#x2022;</span>
-                  <p>{formatDistanceToNow(comment.createdAt)} ago</p>
-                  {comment.edited && (
-                    <>
-                      <span>&#x2022;</span>
-                      <p>(edited)</p>
-                    </>
-                  )}
-                </div>
-                <p className="py-1">{comment.message}</p>
-                <div className="flex gap-x-2">
-                  {session?.user && (
-                    <>
-                      <button
-                        onClick={() => {
-                          setEdit(null);
-                          setOpen((prevOpen) => (prevOpen === i ? null : i));
-                        }}
-                      >
-                        Reply
-                      </button>
-                      {session?.user.userId === comment.userId && (
-                        <>
-                          <button
-                            onClick={() => {
-                              setOpen(null);
-                              setEdit((prevEdit) =>
-                                prevEdit === i ? null : i
-                              );
-                            }}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => deleteComment({ id: comment.id })}
-                          >
-                            Delete
-                          </button>
-                        </>
-                      )}
-                    </>
-                  )}
-                </div>
-                <>
-                  {open === i && (
-                    <ReplyEdit
-                      commentUsername={comment.user.username}
-                      isLoading={isCreateReplyLoading}
-                      schema={createComment}
-                      onSubmit={(data: z.infer<typeof createCommentSchema>) =>
-                        handleCreateReply(data, comment.id)
-                      }
-                    />
-                  )}
-                  {edit === i && (
-                    <ReplyEdit
-                      editing={true}
-                      isLoading={isEditCommentLoading}
-                      schema={createComment}
-                      onSubmit={(data: z.infer<typeof editCommentSchema>) =>
-                        handleEditComment(data, comment.id)
-                      }
-                    />
-                  )}
-                  {comment.replies &&
-                    comment.replies.map((reply, j) => (
-                      <Comment key={j} reply={reply} />
-                    ))}
-                </>
-              </div>
-            </div>
+            <Comment
+              key={i}
+              edit={edit}
+              open={open}
+              session={session}
+              setEdit={setEdit}
+              setOpen={setOpen}
+              comment={comment}
+              deleteComment={deleteComment}
+              handleCreateReply={handleCreateReply}
+              handleEditComment={handleEditComment}
+              isCreateReplyLoading={isCreateReplyLoading}
+              isEditCommentLoading={isEditCommentLoading}
+            />
           ))}
       </section>
     </section>
