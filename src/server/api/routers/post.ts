@@ -29,7 +29,11 @@ export const postRouter = createTRPCRouter({
                 },
               }
             : {}),
-
+          _count: {
+            select: {
+              comments: true,
+            },
+          },
           creator: {
             select: {
               username: true,

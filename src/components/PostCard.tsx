@@ -7,6 +7,15 @@ export const PostCard = ({
   voteStatus,
 }: {
   post: Post & {
+    votes?:
+      | {
+          value: number;
+          postId: string;
+        }[]
+      | undefined;
+    _count: {
+      comments: number;
+    };
     creator: {
       username: string;
     };
@@ -20,6 +29,9 @@ export const PostCard = ({
         <span className="text-sm">u/{post.creator.username}</span>
         <h1 className="text-lg font-semibold">{post.title}</h1>
         <p className="pt-2">{post.text}</p>
+        <div className="mt-2 ml-2 flex gap-x-2">
+          {post._count && <p>{post._count.comments} Comments</p>}
+        </div>
       </div>
     </Link>
   </article>
