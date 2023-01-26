@@ -27,7 +27,7 @@ export const Comment: FunctionComponent<CommentProps> = ({
           <span>&#x2022;</span>
           <p>{reply && formatDistanceToNow(reply.createdAt)} ago</p>
         </div>
-        <p>{reply?.message}</p>
+        <p className="py-1">{reply?.message}</p>
       </div>
     </section>
   );

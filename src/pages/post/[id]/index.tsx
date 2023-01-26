@@ -198,29 +198,37 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
                     </>
                   )}
                 </div>
-                <p>{comment.message}</p>
+                <p className="py-1">{comment.message}</p>
                 <div className="flex gap-x-2">
-                  <button
-                    onClick={() => {
-                      setEdit(null);
-                      setOpen((prevOpen) => (prevOpen === i ? null : i));
-                    }}
-                  >
-                    Reply
-                  </button>
-                  {session?.user.userId === comment.userId && (
+                  {session?.user && (
                     <>
                       <button
                         onClick={() => {
-                          setOpen(null);
-                          setEdit((prevEdit) => (prevEdit === i ? null : i));
+                          setEdit(null);
+                          setOpen((prevOpen) => (prevOpen === i ? null : i));
                         }}
                       >
-                        Edit
+                        Reply
                       </button>
-                      <button onClick={() => deleteComment({ id: comment.id })}>
-                        Delete
-                      </button>
+                      {session?.user.userId === comment.userId && (
+                        <>
+                          <button
+                            onClick={() => {
+                              setOpen(null);
+                              setEdit((prevEdit) =>
+                                prevEdit === i ? null : i
+                              );
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => deleteComment({ id: comment.id })}
+                          >
+                            Delete
+                          </button>
+                        </>
+                      )}
                     </>
                   )}
                 </div>
