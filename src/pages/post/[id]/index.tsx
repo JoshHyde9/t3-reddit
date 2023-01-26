@@ -253,13 +253,10 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
                       }
                     />
                   )}
-                  {comment.replies.map((reply, j) => (
-                    <Comment
-                      key={j}
-                      reply={reply}
-                      creatorUsername={comment.user.username}
-                    />
-                  ))}
+                  {comment.replies &&
+                    comment.replies.map((reply, j) => (
+                      <Comment key={j} reply={reply} />
+                    ))}
                 </>
               </div>
             </div>
