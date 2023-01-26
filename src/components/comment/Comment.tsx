@@ -22,7 +22,6 @@ type CommentProps = {
       id: string;
       username: string;
     };
-    userId?: string;
     createdAt: Date;
     replies?: {
       id: string;

@@ -78,7 +78,6 @@ export const postRouter = createTRPCRouter({
               edited: true,
               createdAt: true,
               commentId: true,
-              userId: true,
               replies: {
                 where: {
                   postId: input.id,
