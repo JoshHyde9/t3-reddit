@@ -25,6 +25,8 @@ import {
 import { Form } from "../../../components/Form";
 import { Voting } from "../../../components/post/Voting";
 import { Comment } from "../../../components/comment/Comment";
+import { ShareBtn } from "../../../components/post/ShareBtn";
+import { env } from "../../../env/client.mjs";
 
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ id: string }>
@@ -167,8 +169,9 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
           </div>
         </div>
       </article>
-      <section>
+      <section className="flex gap-x-2">
         <p>{post.comments.length} comments</p>
+        <ShareBtn url={`${env.NEXT_PUBLIC_URL}/post/${post.id}`} />
       </section>
       <section>
         {session?.user && (
