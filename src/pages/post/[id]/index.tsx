@@ -23,7 +23,7 @@ import {
 } from "../../../utils/schema";
 
 import { Form } from "../../../components/Form";
-import { Voting } from "../../../components/Voting";
+import { Voting } from "../../../components/post/Voting";
 import { Comment } from "../../../components/comment/Comment";
 
 export const getStaticProps = async (

@@ -1,7 +1,7 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import React from "react";
-import { PostCard } from "../components/PostCard";
+import { PostCard } from "../components/post/PostCard";
 
 import { api } from "../utils/api";
 

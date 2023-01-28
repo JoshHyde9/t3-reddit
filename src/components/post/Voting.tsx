@@ -1,5 +1,5 @@
 import type { FunctionComponent } from "react";
-import { api } from "../utils/api";
+import { api } from "../../utils/api";
 
 type VotingProps = {
   points: number;
