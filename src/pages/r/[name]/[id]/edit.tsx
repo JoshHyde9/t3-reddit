@@ -9,14 +9,14 @@ import type { z } from "zod";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 
-import { appRouter } from "../../../server/api/root";
-import { prisma } from "../../../server/db";
-import { createInnerTRPCContext } from "../../../server/api/trpc";
+import { appRouter } from "../../../../server/api/root";
+import { prisma } from "../../../../server/db";
+import { createInnerTRPCContext } from "../../../../server/api/trpc";
 
-import { api } from "../../../utils/api";
-import { editPostSchema } from "../../../utils/schema";
+import { api } from "../../../../utils/api";
+import { editPostSchema } from "../../../../utils/schema";
 
-import { Form } from "../../../components/Form";
+import { Form } from "../../../../components/Form";
 import Link from "next/link";
 
 export async function getStaticProps(
@@ -27,13 +27,16 @@ export async function getStaticProps(
     ctx: createInnerTRPCContext({ session: null }),
     transformer: superjson,
   });
+
   const id = context.params?.id as string;
+  const subName = context.params?.id as string;
 
   await ssg.post.getById.prefetch({ id });
   return {
     props: {
       trpcState: ssg.dehydrate(),
       id,
+      subName,
     },
     revalidate: 1,
   };
@@ -42,12 +45,14 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const posts = await prisma.post.findMany({
     select: {
       id: true,
+      subName: true,
     },
   });
   return {
     paths: posts.map((post) => ({
       params: {
         id: post.id,
+        name: post.subName,
       },
     })),
     fallback: "blocking",

@@ -11,25 +11,25 @@ import { useRouter } from "next/router";
 import superjson from "superjson";
 import type { z } from "zod";
 
-import { appRouter } from "../../../server/api/root";
-import { createInnerTRPCContext } from "../../../server/api/trpc";
-import { prisma } from "../../../server/db";
+import { appRouter } from "../../../../server/api/root";
+import { createInnerTRPCContext } from "../../../../server/api/trpc";
+import { prisma } from "../../../../server/db";
 
-import { api } from "../../../utils/api";
+import { api } from "../../../../utils/api";
 import {
   createComment,
   type editCommentSchema,
   type createCommentSchema,
-} from "../../../utils/schema";
+} from "../../../../utils/schema";
 
-import { Form } from "../../../components/Form";
-import { Voting } from "../../../components/post/Voting";
-import { Comment } from "../../../components/comment/Comment";
-import { ShareBtn } from "../../../components/post/ShareBtn";
-import { env } from "../../../env/client.mjs";
+import { Form } from "../../../../components/Form";
+import { Voting } from "../../../../components/post/Voting";
+import { Comment } from "../../../../components/comment/Comment";
+import { ShareBtn } from "../../../../components/post/ShareBtn";
+import { env } from "../../../../env/client.mjs";
 
 export const getStaticProps = async (
-  context: GetStaticPropsContext<{ id: string }>
+  context: GetStaticPropsContext<{ id: string; name: string }>
 ) => {
   const ssg = createProxySSGHelpers({
     router: appRouter,
@@ -38,6 +38,7 @@ export const getStaticProps = async (
   });
 
   const id = context.params?.id as string;
+  const subName = context.params?.name as string;
 
   await ssg.post.getById.prefetch({ id });
 
@@ -45,18 +46,22 @@ export const getStaticProps = async (
     props: {
       trpcState: ssg.dehydrate(),
       id,
+      subName,
     },
     revalidate: 1,
   };
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const posts = await prisma.post.findMany({ select: { id: true } });
+  const posts = await prisma.post.findMany({
+    select: { id: true, subName: true },
+  });
 
   return {
     paths: posts.map((post) => ({
       params: {
         id: post.id,
+        name: post.subName,
       },
     })),
     fallback: "blocking",
