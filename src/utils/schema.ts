@@ -17,6 +17,11 @@ export const createPostSchema = z.object({
     .min(1, { message: "title must not be empty." })
     .describe("Title: // Title..."),
   text: textAreaSchema,
+  subName: z
+    .string({ required_error: "Required." })
+    .trim()
+    .min(1, { message: "sub name must not be empty." })
+    .describe("Sub Name: // Sub name..."),
 });
 
 export type CreatePost = z.infer<typeof createPostSchema>;
@@ -96,4 +101,17 @@ export const createCommentSchema = createComment.extend({
 
 export const editCommentSchema = createComment.extend({
   commentId: z.string(),
+});
+
+export const createSubSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, { message: "name must not be empty." })
+    .describe("Name: // Name..."),
+  description: z
+    .string()
+    .trim()
+    .min(1, { message: "description must not be null" })
+    .describe("Description: // Description..."),
 });
