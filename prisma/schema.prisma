@@ -64,6 +64,9 @@ model User {
 
     accounts Account[]
     sessions Session[]
+
+    sub   Sub?    @relation(fields: [subId], references: [id])
+    subId String?
 }
 
 model Post {
@@ -80,6 +83,9 @@ model Post {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    sub   Sub?    @relation(fields: [subId], references: [id])
+    subId String?
 
     @@unique([id, creatorId])
 }
@@ -121,4 +127,16 @@ model Comment {
     updatedAt DateTime @updatedAt
 
     @@unique([id, userId])
+}
+
+model Sub {
+    id          String @id @default(cuid())
+    name        String
+    description String
+
+    posts Post[]
+    users User[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
