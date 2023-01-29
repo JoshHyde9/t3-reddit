@@ -84,8 +84,8 @@ model Post {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    sub     Sub    @relation(fields: [subName], references: [id])
-    subName String @unique
+    sub     Sub    @relation(fields: [subName], references: [name])
+    subName String
 
     @@unique([id, creatorId])
 }
