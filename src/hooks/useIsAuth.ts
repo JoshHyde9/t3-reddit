@@ -4,11 +4,11 @@ import { useEffect } from "react";
 
 export const useIsAuth = () => {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { status } = useSession();
 
   useEffect(() => {
-    if (!session) {
+    if (status === "unauthenticated") {
       void router.replace(`/login?next=${router.pathname}`);
     }
-  }, [session, router]);
+  }, [router, status]);
 };
