@@ -17,8 +17,8 @@ const CreatePost: NextPage = () => {
     isLoading,
     error,
   } = api.post.createPost.useMutation({
-    onSuccess: async ({ id }) => {
-      await router.replace(`/post/${id}`);
+    onSuccess: async ({ id, subName }) => {
+      await router.replace(`/r/${subName}/${id}`);
     },
   });
 
