@@ -5,6 +5,7 @@ import type {
   InferGetServerSidePropsType,
 } from "next";
 import superjson from "superjson";
+import { format } from "date-fns";
 
 import { appRouter } from "../../../server/api/root";
 import { createInnerTRPCContext } from "../../../server/api/trpc";
@@ -37,7 +38,9 @@ export const getStaticProps = async (
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const posts = await prisma.post.findMany({ select: { subName: true } });
+  const posts = await prisma.post.findMany({
+    select: { subName: true },
+  });
 
   return {
     paths: posts.map((post) => ({
@@ -50,30 +53,51 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
-  const postQuery = api.sub.getAllPostsFromSub.useQuery(
+  const postsAndSubQuery = api.sub.getAllPostsFromSub.useQuery(
     { name: props.name },
     { refetchOnWindowFocus: false }
   );
 
-  if (postQuery.status !== "success") {
+  if (postsAndSubQuery.status !== "success") {
     return <p>Loading...</p>;
   }
 
-  const { data: posts } = postQuery;
+  const { data: postsAndSub } = postsAndSubQuery;
 
-  if (posts.length <= 0) {
+  if (!postsAndSub) {
+    return <p>Sub does not exist.</p>;
+  }
+
+  if (postsAndSub.posts.length <= 0) {
     return <p>No posts exist on this sub.</p>;
   }
 
   return (
-    <section className="mx-auto max-w-prose">
-      {posts.map((post) => (
-        <PostCard
-          key={post.id}
-          post={post}
-          voteStatus={post.votes?.find((status) => post.id === status.postId)}
-        />
-      ))}
+    <section className="my-4 mx-auto max-w-4xl">
+      <section>
+        <h1 className="text-3xl font-semibold">{postsAndSub.description}</h1>
+        <p>r/{postsAndSub.name}</p>
+      </section>
+      <section className="flex justify-between gap-x-4">
+        <section className="w-9/12">
+          {postsAndSub.posts.map((post) => (
+            <PostCard
+              key={post.id}
+              post={post}
+              voteStatus={post.votes?.find(
+                (status) => post.id === status.postId
+              )}
+            />
+          ))}
+        </section>
+        <section className="my-4 min-w-[250px] max-w-xs rounded-md border p-4">
+          <h2 className="mb-4 font-semibold">About community</h2>
+          <p>{postsAndSub.description}</p>
+          <p className="font-light text-neutral-500">
+            Created {format(postsAndSub.createdAt, "MMM dd, YYY")}
+          </p>
+        </section>
+      </section>
     </section>
   );
 };

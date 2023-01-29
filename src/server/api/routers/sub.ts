@@ -8,30 +8,44 @@ export const subRouter = createTRPCRouter({
   getAllPostsFromSub: publicProcedure
     .input(z.object({ name: z.string() }))
     .query(async ({ input, ctx }) => {
-      return await ctx.prisma.post.findMany({
-        where: {
-          subName: input.name,
-        },
+      return await ctx.prisma.sub.findUnique({
+        where: { name: input.name },
         include: {
-          // Get the votes of the posts if the user is logged in
-          ...(ctx.session?.user
-            ? {
-                votes: {
-                  select: { value: true, postId: true },
-                  where: { userId: ctx.session.user.userId },
+          posts: {
+            include: {
+              ...(ctx.session?.user
+                ? {
+                    votes: {
+                      select: { value: true, postId: true },
+                      where: { userId: ctx.session.user.userId },
+                    },
+                  }
+                : {}),
+              creator: {
+                select: {
+                  username: true,
                 },
-              }
-            : {}),
-          _count: {
-            select: {
-              comments: true,
+              },
+              _count: {
+                select: {
+                  comments: true,
+                },
+              },
             },
           },
-          creator: {
-            select: {
-              username: true,
-            },
-          },
+        },
+      });
+    }),
+  getSubByName: publicProcedure
+    .input(z.object({ subName: z.string() }))
+    .query(async ({ input, ctx }) => {
+      return await ctx.prisma.sub.findUnique({
+        where: { name: input.subName },
+        select: {
+          description: true,
+          name: true,
+          createdAt: true,
+          _count: { select: { users: true } },
         },
       });
     }),
