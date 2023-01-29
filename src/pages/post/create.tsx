@@ -23,7 +23,11 @@ const CreatePost: NextPage = () => {
   });
 
   const onSubmit = (data: CreatePost) => {
-    createPostMutation({ title: data.title, text: data.text });
+    createPostMutation({
+      title: data.title,
+      text: data.text,
+      subName: data.subName,
+    });
   };
 
   return (
