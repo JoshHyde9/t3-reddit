@@ -43,7 +43,10 @@ export const PostCard = ({
         </Link>
       </div>
       <div className="my-2 ml-2 flex items-center gap-x-2">
-        {post._count && <p>{post._count.comments} Comments</p>}
+        <p>
+          {post._count.comments}{" "}
+          {post._count.comments === 1 ? "Comment" : "Comments"}
+        </p>
         <ShareBtn url={`${env.NEXT_PUBLIC_URL}/r/${post.subName}/${post.id}`} />
       </div>
     </div>

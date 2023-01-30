@@ -175,7 +175,10 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
         </div>
       </article>
       <section className="flex gap-x-2">
-        <p>{post.comments.length} comments</p>
+        <p>
+          {post.comments.length}{" "}
+          {post.comments.length === 1 ? "Comment" : "Comments"}
+        </p>
         <ShareBtn url={`${env.NEXT_PUBLIC_URL}/r/${post.subName}/${post.id}`} />
       </section>
       <section>
