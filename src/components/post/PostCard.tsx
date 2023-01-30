@@ -30,7 +30,7 @@ export const PostCard = ({
     <div className="w-full">
       <div className="p-1 pr-2">
         <div className="mb-2 flex items-center gap-x-1 text-xs">
-          <Link href={`/r/${post.subName}`} className="z-10 hover:underline">
+          <Link href={`/r/${post.subName}`} className="hover:underline">
             <p className="text-sm font-semibold">r/{post.subName}</p>
           </Link>
           <span className="mx-1 font-thin">&#x2022;</span>
