@@ -8,7 +8,7 @@ import { api } from "../utils/api";
 
 const Home: NextPage = () => {
   const { data, isLoading, fetchNextPage } = api.post.getAll.useInfiniteQuery(
-    { limit: 3 },
+    { limit: 10 },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       refetchOnWindowFocus: false,
