@@ -21,7 +21,7 @@ export const createPostSchema = z.object({
     .string({ required_error: "Required." })
     .trim()
     .min(1, { message: "sub name must not be empty." })
-    .describe("Sub Name: // Sub name..."),
+    .describe("Community: // Community..."),
 });
 
 export type CreatePost = z.infer<typeof createPostSchema>;

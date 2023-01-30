@@ -38,7 +38,7 @@ const CreateSub: NextPage = () => {
         onSubmit={handleCreateSub}
         isLoading={isCreateSubLoading}
         globalError={error?.message}
-        buttonMessage="Create sub"
+        buttonMessage="Create Community"
       />
     </section>
   );
