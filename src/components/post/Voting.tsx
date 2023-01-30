@@ -15,6 +15,7 @@ export const Voting: FunctionComponent<VotingProps> = ({
   const utils = api.useContext();
   const { mutate: vote } = api.post.vote.useMutation({
     onSettled: async () => {
+      await utils.sub.invalidate();
       await utils.post.invalidate();
     },
   });
