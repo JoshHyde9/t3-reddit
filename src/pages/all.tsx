@@ -3,20 +3,17 @@ import Head from "next/head";
 import Link from "next/link";
 import React from "react";
 import { PostCard } from "../components/post/PostCard";
-import { useIsAuth } from "../hooks/useIsAuth";
 
 import { api } from "../utils/api";
 
 const Home: NextPage = () => {
-  useIsAuth();
-  const { data, isLoading, fetchNextPage } =
-    api.post.getAllUserSubbedTo.useInfiniteQuery(
-      { limit: 10 },
-      {
-        getNextPageParam: (lastPage) => lastPage.nextCursor,
-        refetchOnWindowFocus: false,
-      }
-    );
+  const { data, isLoading, fetchNextPage } = api.post.getAll.useInfiniteQuery(
+    { limit: 10 },
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      refetchOnWindowFocus: false,
+    }
+  );
 
   return (
     <>

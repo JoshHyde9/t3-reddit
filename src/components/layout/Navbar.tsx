@@ -47,6 +47,9 @@ const MobileNav = ({
         <NavLink to="/" onClick={() => setOpen(!open)}>
           Home
         </NavLink>
+        <NavLink to="/all" onClick={() => setOpen(!open)}>
+          Home
+        </NavLink>
         {!session && (
           <>
             <NavLink to="/login" onClick={() => setOpen(!open)}>
@@ -113,6 +116,7 @@ const NavBar: React.FC = () => {
 
         <div className="mt-10 hidden items-center md:flex">
           <NavLink to="/">Home</NavLink>
+          <NavLink to="/all">All</NavLink>
           {!session && (
             <>
               <NavLink to="/login">Login</NavLink>
