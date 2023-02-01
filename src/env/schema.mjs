@@ -19,6 +19,10 @@ export const serverSchema = z.object({
     // VERCEL_URL doesn't include `https` so it cant be validated as a URL
     process.env.VERCEL ? z.string() : z.string().url()
   ),
+  ACCESS_KEY_ID: z.string(),
+  ACCESS_KEY_SECRET: z.string(),
+  BUCKET_NAME: z.string(),
+  REGION: z.string(),
 });
 
 /**
@@ -31,6 +35,10 @@ export const serverEnv = {
   NODE_ENV: process.env.NODE_ENV,
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
   NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+  ACCESS_KEY_ID: process.env.ACCESS_KEY_ID,
+  ACCESS_KEY_SECRET: process.env.ACCESS_KEY_SECRET,
+  BUCKET_NAME: process.env.BUCKET_NAME,
+  REGION: process.env.REGION,
 };
 
 /**
