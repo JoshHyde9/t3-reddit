@@ -1,7 +1,8 @@
 import { type NextPage } from "next";
+import { type z } from "zod";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
-import { type z } from "zod";
+import Link from "next/link";
 
 import { loginUser } from "../utils/schema";
 
@@ -44,6 +45,14 @@ const Login: NextPage = () => {
         globalError={error}
         isLoading={loading}
       />
+      <div className="my-2 flex justify-between">
+        <Link href="/forgot-password" className="hover:underline">
+          Forgot password?
+        </Link>
+        <Link href="/register" className="hover:underline">
+          Don&apos;t have an account?
+        </Link>
+      </div>
     </div>
   );
 };
