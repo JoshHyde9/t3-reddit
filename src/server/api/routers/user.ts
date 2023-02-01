@@ -17,8 +17,8 @@ export const userRouter = createTRPCRouter({
   register: publicProcedure
     .input(registerUser)
     .mutation(async ({ input, ctx }) => {
-      const hashedPassword = await hash(input.password);
       try {
+        const hashedPassword = await hash(input.password);
         await ctx.prisma.user.create({
           data: {
             username: input.username,
@@ -39,6 +39,11 @@ export const userRouter = createTRPCRouter({
               code: "BAD_REQUEST",
               message: "Username already is use.",
             });
+        } else {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Something cooked.",
+          });
         }
       }
     }),
