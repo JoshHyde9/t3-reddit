@@ -65,8 +65,7 @@ model User {
     accounts Account[]
     sessions Session[]
 
-    sub   Sub?    @relation(fields: [subId], references: [id])
-    subId String?
+    subs Sub[]
 }
 
 model Post {

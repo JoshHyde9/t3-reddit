@@ -38,9 +38,7 @@ CREATE TABLE "User" (
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
-    "subId" TEXT,
-    CONSTRAINT "User_subId_fkey" FOREIGN KEY ("subId") REFERENCES "Sub" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+    "updatedAt" DATETIME NOT NULL
 );
 
 -- CreateTable
@@ -52,9 +50,9 @@ CREATE TABLE "Post" (
     "creatorId" TEXT NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
-    "subId" TEXT,
+    "subName" TEXT NOT NULL,
     CONSTRAINT "Post_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "Post_subId_fkey" FOREIGN KEY ("subId") REFERENCES "Sub" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT "Post_subName_fkey" FOREIGN KEY ("subName") REFERENCES "Sub" ("name") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -95,6 +93,14 @@ CREATE TABLE "Sub" (
     "updatedAt" DATETIME NOT NULL
 );
 
+-- CreateTable
+CREATE TABLE "_SubToUser" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL,
+    CONSTRAINT "_SubToUser_A_fkey" FOREIGN KEY ("A") REFERENCES "Sub" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "_SubToUser_B_fkey" FOREIGN KEY ("B") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Account_provider_providerAccountId_key" ON "Account"("provider", "providerAccountId");
 
@@ -118,3 +124,12 @@ CREATE UNIQUE INDEX "Post_id_creatorId_key" ON "Post"("id", "creatorId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Comment_id_userId_key" ON "Comment"("id", "userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Sub_name_key" ON "Sub"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_SubToUser_AB_unique" ON "_SubToUser"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_SubToUser_B_index" ON "_SubToUser"("B");

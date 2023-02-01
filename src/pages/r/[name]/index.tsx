@@ -53,6 +53,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
+  const utils = api.useContext();
+
   const postsAndSubQuery = api.sub.getAllPostsFromSub.useQuery(
     { name: props.name },
     { refetchOnWindowFocus: false }
@@ -71,6 +73,12 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
   if (postsAndSub.posts.length <= 0) {
     return <p>No posts exist on this sub.</p>;
   }
+
+  const { mutate: joinSub } = api.sub.subscribeUserToSub.useMutation({
+    onSettled: async () => {
+      await utils.sub.getAllPostsFromSub.invalidate();
+    },
+  });
 
   return (
     <section className="my-4 mx-auto max-w-4xl">
@@ -96,6 +104,18 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
           <p className="font-light text-neutral-500">
             Created {format(postsAndSub.createdAt, "MMM dd, YYY")}
           </p>
+          <hr className="my-4" />
+          <div className="flex flex-col text-center">
+            <button
+              onClick={() => joinSub({ subName: props.name })}
+              className="rounded-full bg-teal-600 py-2 text-white duration-300 hover:bg-teal-500"
+            >
+              {postsAndSub.users && postsAndSub.users.length >= 1
+                ? "Leave"
+                : "Join"}{" "}
+              Community
+            </button>
+          </div>
         </section>
       </section>
     </section>

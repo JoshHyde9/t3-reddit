@@ -132,8 +132,6 @@ export const postRouter = createTRPCRouter({
   createPost: protectedProcedure
     .input(createPostSchema)
     .mutation(async ({ input, ctx }) => {
-      console.log(input);
-
       const post = await ctx.prisma.$transaction(async (tx) => {
         const post = await tx.post.create({
           data: {

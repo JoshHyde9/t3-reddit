@@ -11,6 +11,12 @@ export const subRouter = createTRPCRouter({
       return await ctx.prisma.sub.findUnique({
         where: { name: input.name },
         include: {
+          ...(ctx.session?.user && {
+            users: {
+              where: { id: ctx.session.user.userId },
+              select: { id: true },
+            },
+          }),
           posts: {
             include: {
               ...(ctx.session?.user
@@ -64,5 +70,33 @@ export const subRouter = createTRPCRouter({
           });
         }
       }
+    }),
+  subscribeUserToSub: protectedProcedure
+    .input(z.object({ subName: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const result = await ctx.prisma.sub.findUnique({
+        where: { name: input.subName },
+        select: {
+          users: {
+            where: { id: ctx.session.user.userId },
+            select: { id: true },
+          },
+        },
+      });
+
+      if (result && result.users.length >= 1) {
+        return await ctx.prisma.sub.update({
+          where: { name: input.subName },
+          data: { users: { disconnect: { id: ctx.session.user.userId } } },
+          select: { users: { select: { id: true } } },
+        });
+      }
+
+      await ctx.prisma.sub.update({
+        where: { name: input.subName },
+        data: { users: { connect: { id: ctx.session.user.userId } } },
+      });
+
+      return true;
     }),
 });
