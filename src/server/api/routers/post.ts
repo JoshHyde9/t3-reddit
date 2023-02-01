@@ -54,6 +54,51 @@ export const postRouter = createTRPCRouter({
         nextCursor,
       };
     }),
+  // FIXME: Cursor is cooked.
+  getAllUserSubbedTo: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(100).nullish(),
+        cursor: z.string().nullish(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const limit = input.limit ?? 50;
+      const { cursor } = input;
+      const items = await ctx.prisma.post.findMany({
+        take: limit + 1,
+        // cursor: cursor ? { createdAt: cursor } : undefined,
+        where: { sub: { users: { some: { id: ctx.session.user.userId } } } },
+        include: {
+          votes: {
+            select: { value: true, postId: true },
+            where: { userId: ctx.session.user.userId },
+          },
+          _count: {
+            select: {
+              comments: true,
+            },
+          },
+          creator: {
+            select: {
+              username: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (items.length > limit) {
+        const nextItem = items.pop();
+        nextCursor = nextItem!.createdAt.toString();
+      }
+      return {
+        items,
+        nextCursor,
+      };
+    }),
   getById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
