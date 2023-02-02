@@ -5,11 +5,13 @@ import { z, type ZodType, type AnyZodObject } from "zod";
 
 import { TextField } from "./TextField";
 import { TextAreaField } from "./TextAreaField";
-import { textAreaSchema } from "../utils/schema";
+import { fileInputSchema, textAreaSchema } from "../utils/schema";
+import { FileInput } from "./FileInput";
 
 const mapping = [
   [z.string(), TextField],
   [textAreaSchema, TextAreaField],
+  [fileInputSchema, FileInput],
 ] as const;
 
 const CreateForm = createTsForm(mapping);
@@ -37,7 +39,6 @@ export const Form: FunctionComponent<FormProps> = ({
 }) => {
   return (
     <CreateForm
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onSubmit={onSubmit}
       schema={schema}
       defaultValues={initialData}

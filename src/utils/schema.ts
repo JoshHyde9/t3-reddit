@@ -3,14 +3,34 @@ import { z } from "zod";
 
 export const textAreaSchema = createUniqueFieldSchema(
   z
-    .string({ required_error: "Required." })
+    .string()
     .trim()
     .min(1, { message: "Text must not be empty." })
     .describe("Text: // Text..."),
   "textAreaId"
 );
 
+export const fileInputSchema = createUniqueFieldSchema(
+  z.string(),
+  "fileInputId"
+);
+
 export const createPostSchema = z.object({
+  title: z
+    .string({ required_error: "Required." })
+    .trim()
+    .min(1, { message: "title must not be empty." })
+    .describe("Title: // Title..."),
+  text: textAreaSchema.optional(),
+  image: fileInputSchema.optional(),
+  subName: z
+    .string({ required_error: "Required." })
+    .trim()
+    .min(1, { message: "sub name must not be empty." })
+    .describe("Community: // Community..."),
+});
+
+export const createTextPostSchema = z.object({
   title: z
     .string({ required_error: "Required." })
     .trim()
@@ -24,7 +44,19 @@ export const createPostSchema = z.object({
     .describe("Community: // Community..."),
 });
 
-export type CreatePost = z.infer<typeof createPostSchema>;
+export const createImagePostSchema = z.object({
+  title: z
+    .string({ required_error: "Required." })
+    .trim()
+    .min(1, { message: "title must not be empty." })
+    .describe("Title: // Title..."),
+  image: fileInputSchema,
+  subName: z
+    .string({ required_error: "Required." })
+    .trim()
+    .min(1, { message: "sub name must not be empty." })
+    .describe("Community: // Community..."),
+});
 
 const usernameSchema = z
   .string({ required_error: "Required." })

@@ -13,5 +13,8 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: {
+    domains: ["t3redditclone.s3.ap-southeast-2.amazonaws.com"],
+  },
 };
 export default config;

@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import superjson from "superjson";
 import type { z } from "zod";
+import Image from "next/image";
 
 import { appRouter } from "../../../../server/api/root";
 import { createInnerTRPCContext } from "../../../../server/api/trpc";
@@ -27,6 +28,7 @@ import { Voting } from "../../../../components/post/Voting";
 import { Comment } from "../../../../components/comment/Comment";
 import { ShareBtn } from "../../../../components/post/ShareBtn";
 import { env } from "../../../../env/client.mjs";
+import formatDistanceToNow from "date-fns/formatDistanceToNow";
 
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ id: string; name: string }>
@@ -159,9 +161,28 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
           voteStatus={post.votes?.find((status) => post.id === status.postId)}
         />
         <div className="flex-auto p-1 pr-2">
-          <span className="text-sm">u/{post.creator.username}</span>
+          <div className="mb-2 flex items-center gap-x-1 text-xs">
+            <Link href={`/r/${post.subName}`} className="hover:underline">
+              <p className="text-sm font-semibold">r/{post.subName}</p>
+            </Link>
+            <span className="mx-1 font-thin">&#x2022;</span>
+            <p>Posted By u/{post.creator.username}</p>
+            <p>{formatDistanceToNow(post.createdAt)} ago</p>
+          </div>
           <h1 className="text-lg font-semibold">{post.title}</h1>
-          <p className="pt-2">{post.text}</p>
+          {post.text ? (
+            <p className="pt-2">{post.text}</p>
+          ) : (
+            <Image
+              className="h-auto w-auto pt-2"
+              src={`https://t3redditclone.s3.ap-southeast-2.amazonaws.com/${
+                post.image as string
+              }`}
+              alt="post image"
+              width={500}
+              height={500}
+            />
+          )}
           <div className="mt-4 flex gap-x-2">
             {session?.user.userId === post.creatorId && (
               <>
