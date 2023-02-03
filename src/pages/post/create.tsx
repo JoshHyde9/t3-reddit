@@ -147,7 +147,7 @@ const CreatePost: NextPage = () => {
               htmlFor="title"
               className="my-2 block text-xs font-extrabold uppercase tracking-wide"
             >
-              Title:{" "}
+              Title:
             </label>
             <input
               value={fields.title}
@@ -163,7 +163,7 @@ const CreatePost: NextPage = () => {
               className="my-2 block text-xs font-extrabold uppercase tracking-wide"
               htmlFor="image"
             >
-              Image:{" "}
+              Image:
             </label>
             <input
               className="w-full appearance-none rounded-md border-2 border-teal-600 p-2 leading-tight transition-colors duration-300 ease-in-out focus:border-teal-500 focus:outline-none"
@@ -177,7 +177,7 @@ const CreatePost: NextPage = () => {
               className="my-2 block text-xs font-extrabold uppercase tracking-wide"
               htmlFor="Community"
             >
-              Community:{" "}
+              Community:
             </label>
             <input
               value={fields.subName}
