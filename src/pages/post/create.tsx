@@ -98,12 +98,11 @@ const CreatePost: NextPage = () => {
     });
   };
 
-  const handleFieldChange = (event: React.FormEvent<HTMLInputElement>) => {
+  const handleFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFields((prevValue) => {
       return {
         ...prevValue,
-        [event.currentTarget.name as keyof ImageForm]:
-          event.currentTarget.value,
+        [event.target.name as keyof ImageForm]: event.target.value,
       };
     });
   };
