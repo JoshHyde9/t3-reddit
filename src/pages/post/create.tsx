@@ -1,23 +1,29 @@
 import type { NextPage } from "next";
 import type { ChangeEvent } from "react";
-import { string, z } from "zod";
+import type { z } from "zod";
 import { useState } from "react";
+import { useRouter } from "next/router";
 
 import { api } from "../../utils/api";
 import {
-  createImagePostSchema,
-  createPostSchema,
+  type createPostSchema,
   createTextPostSchema,
 } from "../../utils/schema";
+
+import { useIsAuth } from "../../hooks/useIsAuth";
+
+import { Form } from "../../components/Form";
 
 type S3Upload = {
   uploadUrl: string;
   key: string;
 };
 
-import { Form } from "../../components/Form";
-import { useRouter } from "next/router";
-import { useIsAuth } from "../../hooks/useIsAuth";
+type ImageForm = {
+  title: string;
+  image: string;
+  subName: string;
+};
 
 const CreatePost: NextPage = () => {
   useIsAuth();
@@ -27,6 +33,7 @@ const CreatePost: NextPage = () => {
     subName: "",
     title: "",
   });
+  const [globalError, setGlobalError] = useState<string | null>(null);
   const router = useRouter();
 
   const {
@@ -44,15 +51,21 @@ const CreatePost: NextPage = () => {
 
     const formData = new FormData(event.target);
 
-    const image = formData.get("image") as string;
+    const image = formData.get("image") as File;
     const subName = formData.get("subName") as string;
     const title = formData.get("title") as string;
 
-    if (!image || !subName || !title) {
-      return null;
+    if (image.size === 0) {
+      return setGlobalError("Please select an image.");
+    }
+    if (!title || title.trim().length <= 0) {
+      return setGlobalError("Title is required.");
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    if (!subName || subName.trim().length <= 0) {
+      return setGlobalError("Community is required");
+    }
+
     const fileType = encodeURIComponent(image.type);
 
     const response = await fetch(`/api/media?fileType=${fileType}`);
@@ -85,11 +98,12 @@ const CreatePost: NextPage = () => {
     });
   };
 
-  const handleFieldChange = (event) => {
+  const handleFieldChange = (event: React.FormEvent<HTMLInputElement>) => {
     setFields((prevValue) => {
       return {
         ...prevValue,
-        [event.target.name]: event.target.value,
+        [event.currentTarget.name as keyof ImageForm]:
+          event.currentTarget.value,
       };
     });
   };
@@ -97,8 +111,26 @@ const CreatePost: NextPage = () => {
   return (
     <div className="mx-auto max-w-prose">
       <div className="flex justify-around">
-        <h2 onClick={() => setPostType("text")}>Text</h2>
-        <h2 onClick={() => setPostType("image")}>Image</h2>
+        <button
+          className={`w-1/4 py-2  duration-300 ${
+            postType === "text"
+              ? "border-b-2 border-teal-600"
+              : "border-b-2 border-white hover:border-teal-500"
+          }`}
+          onClick={() => setPostType("text")}
+        >
+          Text
+        </button>
+        <button
+          className={`w-1/4 py-2  duration-300 ${
+            postType === "image"
+              ? "border-b-2 border-teal-600"
+              : "border-b-2 border-white hover:border-teal-500"
+          }`}
+          onClick={() => setPostType("image")}
+        >
+          Image
+        </button>
       </div>
       {postType === "text" ? (
         <Form
@@ -111,28 +143,63 @@ const CreatePost: NextPage = () => {
         />
       ) : (
         <form className="flex flex-col" onSubmit={handleImagePost}>
-          <label htmlFor="title">Title: </label>
-          <input
-            value={fields.title}
-            onChange={handleFieldChange}
-            className="w-full appearance-none rounded-md border-2 border-teal-600 p-2 leading-tight transition-colors duration-300 ease-in-out focus:border-teal-500 focus:outline-none"
-            type="text"
-            name="title"
-          />
-          <input
-            className="my-2"
-            accept="image/jpeg image/png"
-            type="file"
-            name="image"
-          />
-          <label htmlFor="Community">Community: </label>
-          <input
-            value={fields.subName}
-            onChange={handleFieldChange}
-            className="w-full appearance-none rounded-md border-2 border-teal-600 p-2 leading-tight transition-colors duration-300 ease-in-out focus:border-teal-500 focus:outline-none"
-            type="text"
-            name="subName"
-          />
+          <div className="mb-2">
+            <label
+              htmlFor="title"
+              className="my-2 block text-xs font-extrabold uppercase tracking-wide"
+            >
+              Title:{" "}
+            </label>
+            <input
+              value={fields.title}
+              onChange={handleFieldChange}
+              className="w-full appearance-none rounded-md border-2 border-teal-600 p-2 leading-tight transition-colors duration-300 ease-in-out focus:border-teal-500 focus:outline-none"
+              type="text"
+              placeholder="Title..."
+              name="title"
+            />
+          </div>
+          <div className="my-2">
+            <label
+              className="my-2 block text-xs font-extrabold uppercase tracking-wide"
+              htmlFor="image"
+            >
+              Image:{" "}
+            </label>
+            <input
+              className="w-full appearance-none rounded-md border-2 border-teal-600 p-2 leading-tight transition-colors duration-300 ease-in-out focus:border-teal-500 focus:outline-none"
+              accept="image/jpeg image/png"
+              type="file"
+              name="image"
+            />
+          </div>
+          <div className="my-2">
+            <label
+              className="my-2 block text-xs font-extrabold uppercase tracking-wide"
+              htmlFor="Community"
+            >
+              Community:{" "}
+            </label>
+            <input
+              value={fields.subName}
+              onChange={handleFieldChange}
+              className="w-full appearance-none rounded-md border-2 border-teal-600 p-2 leading-tight transition-colors duration-300 ease-in-out focus:border-teal-500 focus:outline-none"
+              type="text"
+              placeholder="KitchenConfidential"
+              name="subName"
+            />
+          </div>
+          <div className="my-1 h-5">
+            {error || globalError ? (
+              <p
+                className={`${
+                  error || globalError ? "text-sm italic" : "hidden"
+                }`}
+              >
+                {globalError ? globalError : error?.message}
+              </p>
+            ) : null}
+          </div>
           <button className="mt-2 rounded-md bg-teal-600 py-2 text-white duration-300 hover:bg-teal-500">
             Create Post
           </button>
