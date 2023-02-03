@@ -62,7 +62,7 @@ const MobileNav = ({
         )}
         {session && (
           <>
-            <NavLink to="/post/create" onClick={() => setOpen(!open)}>
+            <NavLink to="/create" onClick={() => setOpen(!open)}>
               Create
             </NavLink>
             <button
@@ -125,7 +125,7 @@ const NavBar: React.FC = () => {
           )}
           {session && (
             <>
-              <NavLink to="/post/create">Create</NavLink>
+              <NavLink to="/create">Create</NavLink>
               <button
                 onClick={async () => {
                   await signOut({ redirect: true, callbackUrl: "/" });
