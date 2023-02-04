@@ -62,18 +62,21 @@ const MobileNav = ({
         )}
         {session && (
           <>
-            <NavLink to="/create" onClick={() => setOpen(!open)}>
+            <NavLink to="/post/create" onClick={() => setOpen(!open)}>
               Create
             </NavLink>
             <button
               className="my-2 px-4 text-left font-normal md:my-0"
               onClick={async () =>
-                await signOut({ redirect: true, callbackUrl: "/" })
+                await signOut({ redirect: true, callbackUrl: "/all" })
               }
             >
               Logout
             </button>
-            <NavLink to="/account" onClick={() => setOpen(!open)}>
+            <NavLink
+              to={`/user/${session.user.username}`}
+              onClick={() => setOpen(!open)}
+            >
               {session.user.username}
             </NavLink>
           </>
@@ -125,16 +128,18 @@ const NavBar: React.FC = () => {
           )}
           {session && (
             <>
-              <NavLink to="/create">Create</NavLink>
+              <NavLink to="/post/create">Create</NavLink>
               <button
                 onClick={async () => {
-                  await signOut({ redirect: true, callbackUrl: "/" });
+                  await signOut({ redirect: true, callbackUrl: "/all" });
                 }}
                 className="relative px-4 transition duration-300 ease-in-out hover:text-teal-500"
               >
                 Logout
               </button>
-              <NavLink to="/account">{session.user.username}</NavLink>
+              <NavLink to={`/user/${session.user.username}`}>
+                {session.user.username}
+              </NavLink>
             </>
           )}
         </div>
