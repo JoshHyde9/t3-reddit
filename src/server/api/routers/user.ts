@@ -97,4 +97,40 @@ export const userRouter = createTRPCRouter({
 
       return { username: user.username };
     }),
+  getAllUserPosts: publicProcedure
+    .input(z.object({ username: z.string() }))
+    .query(async ({ input, ctx }) => {
+      return await ctx.prisma.user.findUnique({
+        where: {
+          ...(ctx.session?.user
+            ? { username: ctx.session.user.username }
+            : { username: input.username }),
+        },
+        select: {
+          username: true,
+          id: true,
+          createdAt: true,
+          posts: {
+            include: {
+              ...(ctx.session?.user
+                ? {
+                    votes: {
+                      select: { value: true, postId: true },
+                      where: { userId: ctx.session.user.userId },
+                    },
+                  }
+                : {}),
+              _count: {
+                select: { comments: true },
+              },
+              creator: {
+                select: {
+                  username: true,
+                },
+              },
+            },
+          },
+        },
+      });
+    }),
 });
