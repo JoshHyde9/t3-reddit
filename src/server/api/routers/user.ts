@@ -113,6 +113,7 @@ export const userRouter = createTRPCRouter({
             include: {
               votes: {
                 select: { value: true, postId: true },
+                where: { userId: ctx.session?.user.userId },
               },
               _count: {
                 select: { comments: true },
