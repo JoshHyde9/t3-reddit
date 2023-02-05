@@ -25,7 +25,6 @@ export const PostCard = ({
     };
   };
   voteStatus: { value: number; postId: string } | undefined;
-  // https://t3redditclone.s3.ap-southeast-2.amazonaws.com/0b64c8d2-6ff7-4502-8380-1ebc7a8cd0f1.jpeg
 }) => (
   <article className="my-4 flex flex-row gap-2 rounded-md border">
     <Voting points={post.points} postId={post.id} voteStatus={voteStatus} />
@@ -36,7 +35,15 @@ export const PostCard = ({
             <p className="text-sm font-semibold">r/{post.subName}</p>
           </Link>
           <span className="mx-1 font-thin">&#x2022;</span>
-          <p>Posted By u/{post.creator.username}</p>
+          <p>
+            Posted by{" "}
+            <Link
+              className="hover:underline"
+              href={`/user/${post.creator.username}`}
+            >
+              u/{post.creator.username}
+            </Link>
+          </p>
           <p>{formatDistanceToNow(post.createdAt)} ago</p>
         </div>
         <Link href={`/r/${post.subName}/${post.id}`}>

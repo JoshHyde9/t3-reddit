@@ -166,7 +166,15 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
               <p className="text-sm font-semibold">r/{post.subName}</p>
             </Link>
             <span className="mx-1 font-thin">&#x2022;</span>
-            <p>Posted By u/{post.creator.username}</p>
+            <p>
+              Posted By{" "}
+              <Link
+                className="hover:underline"
+                href={`/user/${post.creator.username}`}
+              >
+                u/{post.creator.username}
+              </Link>
+            </p>
             <p>{formatDistanceToNow(post.createdAt)} ago</p>
           </div>
           <h1 className="text-lg font-semibold">{post.title}</h1>
