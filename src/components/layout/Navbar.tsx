@@ -135,7 +135,7 @@ const NavBar: React.FC = () => {
     <nav className="flex h-20 w-screen items-center px-4 py-4">
       <MobileNav open={open} setOpen={setOpen} session={session} />
 
-      <div className="flex w-full items-center md:pr-10">
+      <div className="flex w-full items-center justify-end md:pr-10">
         <div
           className="relative z-50 flex h-8 w-8 flex-col items-center justify-between md:hidden"
           onClick={() => {
@@ -160,8 +160,8 @@ const NavBar: React.FC = () => {
           />
         </div>
 
-        <div className="mt-10 hidden grow items-center md:flex">
-          <div className="relative flex">
+        <div className="mt-10 hidden grow items-center justify-around md:flex">
+          <div className="relative flex w-full max-w-lg">
             <form className="w-full" onSubmit={handleSearch}>
               <input
                 value={searchTerm}
@@ -208,7 +208,7 @@ const NavBar: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-10 ml-auto hidden items-center md:flex">
+        <div className="mt-10 hidden items-center md:flex">
           <NavLink to="/">Home</NavLink>
           <NavLink to="/all">All</NavLink>
           {!session && (
