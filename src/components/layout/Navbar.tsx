@@ -172,7 +172,7 @@ const NavBar: React.FC = () => {
                 onClick={() => setDropDown(true)}
               />
             </form>
-            {dropDown ? (
+            {dropDown && (
               <div
                 className="absolute z-10 w-full translate-y-8 rounded-md rounded-t-none border-2 border-teal-600 bg-white px-2 pt-4"
                 ref={wrapperRef}
@@ -204,7 +204,7 @@ const NavBar: React.FC = () => {
                   </>
                 )}
               </div>
-            ) : null}
+            )}
           </div>
         </div>
 
