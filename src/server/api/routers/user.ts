@@ -100,11 +100,10 @@ export const userRouter = createTRPCRouter({
   getAllUserPosts: publicProcedure
     .input(z.object({ username: z.string() }))
     .query(async ({ input, ctx }) => {
+      // TODO: Get more data if the logged in user is looking at their profile
       return await ctx.prisma.user.findUnique({
         where: {
-          ...(ctx.session?.user
-            ? { username: ctx.session.user.username }
-            : { username: input.username }),
+          username: input.username,
         },
         select: {
           username: true,
@@ -112,14 +111,9 @@ export const userRouter = createTRPCRouter({
           createdAt: true,
           posts: {
             include: {
-              ...(ctx.session?.user
-                ? {
-                    votes: {
-                      select: { value: true, postId: true },
-                      where: { userId: ctx.session.user.userId },
-                    },
-                  }
-                : {}),
+              votes: {
+                select: { value: true, postId: true },
+              },
               _count: {
                 select: { comments: true },
               },
