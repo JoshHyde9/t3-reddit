@@ -99,11 +99,10 @@ const UserAccount = (
         <section className="my-4 h-fit min-w-[250px] max-w-xs rounded-md border p-4">
           <h1 className="mb-4 text-lg font-semibold">{userPosts.username}</h1>
           <div className="flex justify-between">
+            {/* TODO: Implement Reddit karma */}
             <div>
-              <h2>Cake day</h2>
-              <p className="font-light text-neutral-500">
-                {format(userPosts.createdAt, "MMM dd, YYY")}
-              </p>
+              <h2>Karma</h2>
+              <p className="font-light text-neutral-500">2,602</p>
             </div>
             <div>
               <h2>Cake day</h2>
