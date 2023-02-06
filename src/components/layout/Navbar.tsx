@@ -51,7 +51,7 @@ const MobileNav = ({
           Home
         </NavLink>
         <NavLink to="/all" onClick={() => setOpen(!open)}>
-          Home
+          All
         </NavLink>
         {!session && (
           <>
@@ -67,6 +67,9 @@ const MobileNav = ({
           <>
             <NavLink to="/post/create" onClick={() => setOpen(!open)}>
               Create
+            </NavLink>
+            <NavLink to="/create" onClick={() => setOpen(!open)}>
+              Create a Community
             </NavLink>
             <button
               className="my-2 px-4 text-left font-normal md:my-0"
