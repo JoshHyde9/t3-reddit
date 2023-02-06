@@ -55,18 +55,18 @@ export const getStaticPaths: GetStaticPaths = async () => {
 const UserAccount = (
   props: InferGetServerSidePropsType<typeof getStaticProps>
 ) => {
-  const userPostsQuery = api.user.getAllUserPosts.useQuery(
+  const userQuery = api.user.getAllUserPosts.useQuery(
     { username: props.username },
     { refetchOnWindowFocus: false }
   );
 
-  if (userPostsQuery.status !== "success") {
+  if (userQuery.status !== "success") {
     return <p>Loading...</p>;
   }
 
-  const { data: userPosts } = userPostsQuery;
+  const { data: user } = userQuery;
 
-  if (!userPosts) {
+  if (!user) {
     return (
       <section className="my-4 mx-auto max-w-4xl">
         <p>User does not exist.</p>
@@ -74,7 +74,7 @@ const UserAccount = (
     );
   }
 
-  if (userPosts.posts.length <= 0) {
+  if (user.posts.length <= 0) {
     return (
       <section className="my-4 mx-auto max-w-4xl">
         <p>User hasn&apos;t created any posts.</p>
@@ -85,18 +85,18 @@ const UserAccount = (
   return (
     <section className="my-4 mx-auto max-w-4xl">
       <section className="px-2 md:hidden md:px-0">
-        <h1 className="text-2xl font-semibold">{userPosts.username}</h1>
+        <h1 className="text-2xl font-semibold">{user.username}</h1>
         <div className="flex gap-x-2 text-neutral-700">
-          <p>u/{userPosts.username}</p>
+          <p>u/{user.username}</p>
           <span>&#x2022;</span>
           <p>2,602 karma</p>
           <span>&#x2022;</span>
-          <p>{format(userPosts.createdAt, "MMM dd, YYY")}</p>
+          <p>{format(user.createdAt, "MMM dd, YYY")}</p>
         </div>
       </section>
       <section className="flex justify-between gap-x-4 px-2 md:px-0">
         <section className="w-full md:w-9/12">
-          {userPosts.posts.map((post) => (
+          {user.posts.map((post) => (
             <PostCard
               key={post.id}
               post={post}
@@ -107,7 +107,7 @@ const UserAccount = (
           ))}
         </section>
         <section className="my-4 hidden h-fit min-w-[250px] max-w-xs rounded-md border p-4 md:block">
-          <h1 className="mb-4 text-lg font-semibold">{userPosts.username}</h1>
+          <h1 className="mb-4 text-lg font-semibold">{user.username}</h1>
           <div className="flex justify-between">
             {/* TODO: Implement Reddit karma */}
             <div>
@@ -117,7 +117,7 @@ const UserAccount = (
             <div>
               <h2>Cake day</h2>
               <p className="font-light text-neutral-700">
-                {format(userPosts.createdAt, "MMM dd, YYY")}
+                {format(user.createdAt, "MMM dd, YYY")}
               </p>
             </div>
           </div>
