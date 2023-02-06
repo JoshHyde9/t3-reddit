@@ -84,8 +84,18 @@ const UserAccount = (
 
   return (
     <section className="my-4 mx-auto max-w-4xl">
-      <section className="flex justify-between gap-x-4">
-        <section className="w-9/12">
+      <section className="px-2 md:hidden md:px-0">
+        <h1 className="text-2xl font-semibold">{userPosts.username}</h1>
+        <div className="flex gap-x-2 text-neutral-700">
+          <p>u/{userPosts.username}</p>
+          <span>&#x2022;</span>
+          <p>2,602 karma</p>
+          <span>&#x2022;</span>
+          <p>{format(userPosts.createdAt, "MMM dd, YYY")}</p>
+        </div>
+      </section>
+      <section className="flex justify-between gap-x-4 px-2 md:px-0">
+        <section className="w-full md:w-9/12">
           {userPosts.posts.map((post) => (
             <PostCard
               key={post.id}
@@ -96,17 +106,17 @@ const UserAccount = (
             />
           ))}
         </section>
-        <section className="my-4 h-fit min-w-[250px] max-w-xs rounded-md border p-4">
+        <section className="my-4 hidden h-fit min-w-[250px] max-w-xs rounded-md border p-4 md:block">
           <h1 className="mb-4 text-lg font-semibold">{userPosts.username}</h1>
           <div className="flex justify-between">
             {/* TODO: Implement Reddit karma */}
             <div>
               <h2>Karma</h2>
-              <p className="font-light text-neutral-500">2,602</p>
+              <p className="font-light text-neutral-700">2,602</p>
             </div>
             <div>
               <h2>Cake day</h2>
-              <p className="font-light text-neutral-500">
+              <p className="font-light text-neutral-700">
                 {format(userPosts.createdAt, "MMM dd, YYY")}
               </p>
             </div>
