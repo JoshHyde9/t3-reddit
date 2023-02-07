@@ -101,7 +101,7 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
         <section className="my-4 h-fit min-w-[250px] max-w-xs rounded-md border p-4">
           <h2 className="mb-4 font-semibold">About community</h2>
           <p>{postsAndSub.description}</p>
-          <p className="font-light text-neutral-500">
+          <p className="font-light text-neutral-700">
             Created {format(postsAndSub.createdAt, "MMM dd, YYY")}
           </p>
           <hr className="my-4" />
