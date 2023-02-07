@@ -64,7 +64,7 @@ const Home: NextPage = () => {
               Create Post
             </Link>
             <Link
-              href="/r/create"
+              href="/create"
               className="rounded-full border-2 border-teal-600 py-2 text-teal-600 duration-300 hover:border-teal-500 hover:text-teal-500"
             >
               Create Community
