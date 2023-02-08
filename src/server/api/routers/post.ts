@@ -44,9 +44,12 @@ export const postRouter = createTRPCRouter({
           createdAt: "desc",
         },
       });
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       let nextCursor: typeof cursor | undefined = undefined;
       if (items.length > limit) {
         const nextItem = items.pop();
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         nextCursor = nextItem!.createdAt.toString();
       }
       return {
@@ -89,9 +92,12 @@ export const postRouter = createTRPCRouter({
           createdAt: "desc",
         },
       });
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       let nextCursor: typeof cursor | undefined = undefined;
       if (items.length > limit) {
         const nextItem = items.pop();
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         nextCursor = nextItem!.createdAt.toString();
       }
       return {

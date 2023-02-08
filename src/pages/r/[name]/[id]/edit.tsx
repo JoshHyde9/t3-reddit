@@ -119,7 +119,7 @@ const Edit = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
         buttonMessage="Edit"
         globalError={error?.message}
         isLoading={isLoading}
-        initialData={{ title: post.title, text: post.text }}
+        initialData={{ title: post.title, text: post.text as string }}
       />
     </div>
   );
