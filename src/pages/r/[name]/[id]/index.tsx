@@ -197,7 +197,7 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
                 <button onClick={() => deletePost({ id: post.id })}>
                   Delete
                 </button>
-                <Link href={`/post/${post.id}/edit`}>Edit</Link>
+                <Link href={`/r/${post.subName}/${post.id}/edit`}>Edit</Link>
               </>
             )}
           </div>
