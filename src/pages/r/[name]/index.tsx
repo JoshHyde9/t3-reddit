@@ -6,6 +6,7 @@ import type {
 } from "next";
 import superjson from "superjson";
 import { format } from "date-fns";
+import { useSession } from "next-auth/react";
 
 import { appRouter } from "../../../server/api/root";
 import { createInnerTRPCContext } from "../../../server/api/trpc";
@@ -14,6 +15,7 @@ import { prisma } from "../../../server/db";
 import { api } from "../../../utils/api";
 
 import { PostCard } from "../../../components/post/PostCard";
+import { useRouter } from "next/router";
 
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ name: string }>
@@ -54,6 +56,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
   const utils = api.useContext();
+  const router = useRouter();
+  const { data: session } = useSession();
 
   const postsAndSubQuery = api.sub.getAllPostsFromSub.useQuery(
     { name: props.name },
@@ -81,7 +85,7 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
   });
 
   return (
-    <section className="my-4 mx-auto max-w-4xl">
+    <section className="my-4 mx-auto max-w-5xl">
       <section>
         <h1 className="text-3xl font-semibold">{postsAndSub.description}</h1>
         <p>r/{postsAndSub.name}</p>
@@ -107,7 +111,13 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
           <hr className="my-4" />
           <div className="flex flex-col text-center">
             <button
-              onClick={() => joinSub({ subName: props.name })}
+              onClick={async () => {
+                if (session) {
+                  joinSub({ subName: props.name });
+                } else {
+                  await router.replace(`/login?next=/r/${props.name}`);
+                }
+              }}
               className="rounded-full bg-teal-600 py-2 text-white duration-300 hover:bg-teal-500"
             >
               {postsAndSub.users && postsAndSub.users.length >= 1
