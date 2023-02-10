@@ -57,7 +57,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
   const utils = api.useContext();
   const router = useRouter();
-  const { data: session } = useSession();
+  const session = useSession();
 
   const subQuery = api.sub.getAllPostsFromSub.useQuery(
     { name: props.name },
@@ -117,7 +117,7 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
           <div className="flex flex-col text-center">
             <button
               onClick={async () => {
-                if (session) {
+                if (session.status === "authenticated") {
                   joinSub({ subName: props.name });
                 } else {
                   await router.replace(`/login?next=/r/${props.name}`);
