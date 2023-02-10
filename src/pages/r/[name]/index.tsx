@@ -16,6 +16,7 @@ import { api } from "../../../utils/api";
 
 import { PostCard } from "../../../components/post/PostCard";
 import { useRouter } from "next/router";
+import { NotFound } from "../../../components/layout/NotFound";
 
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ name: string }>
@@ -71,11 +72,15 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
   const { data: sub } = subQuery;
 
   if (!sub) {
-    return <p>Sub does not exist.</p>;
+    return (
+      <NotFound
+        message={`Hm... we couldn't find any results for "${props.name}"`}
+      />
+    );
   }
 
   if (sub.posts.length <= 0) {
-    return <p>No posts exist on this sub.</p>;
+    return <NotFound message="No posts exist on this sub" />;
   }
 
   const { mutate: joinSub } = api.sub.subscribeUserToSub.useMutation({
