@@ -82,7 +82,7 @@ const CreatePost: NextPage = () => {
     const response = await fetch(`/api/media?fileType=${fileType}`);
 
     if (!response.ok) {
-      return console.log("Something dun goofed");
+      return setGlobalError("Server error, please try again.");
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
