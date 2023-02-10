@@ -109,6 +109,11 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
             Created {format(postsAndSub.createdAt, "MMM dd, YYY")}
           </p>
           <hr className="my-4" />
+          <div className="flex flex-col leading-4">
+            <h3>{Intl.NumberFormat().format(postsAndSub._count.users)}</h3>
+            <p>{postsAndSub._count.users === 1 ? "user" : "users"}</p>
+          </div>
+          <hr className="my-4" />
           <div className="flex flex-col text-center">
             <button
               onClick={async () => {

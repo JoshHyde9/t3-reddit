@@ -17,6 +17,9 @@ export const subRouter = createTRPCRouter({
               select: { id: true },
             },
           }),
+          _count: {
+            select: { users: true },
+          },
           posts: {
             include: {
               ...(ctx.session?.user
