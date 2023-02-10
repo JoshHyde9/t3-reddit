@@ -59,22 +59,22 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
   const router = useRouter();
   const { data: session } = useSession();
 
-  const postsAndSubQuery = api.sub.getAllPostsFromSub.useQuery(
+  const subQuery = api.sub.getAllPostsFromSub.useQuery(
     { name: props.name },
     { refetchOnWindowFocus: false }
   );
 
-  if (postsAndSubQuery.status !== "success") {
+  if (subQuery.status !== "success") {
     return <p>Loading...</p>;
   }
 
-  const { data: postsAndSub } = postsAndSubQuery;
+  const { data: sub } = subQuery;
 
-  if (!postsAndSub) {
+  if (!sub) {
     return <p>Sub does not exist.</p>;
   }
 
-  if (postsAndSub.posts.length <= 0) {
+  if (sub.posts.length <= 0) {
     return <p>No posts exist on this sub.</p>;
   }
 
@@ -87,12 +87,12 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
   return (
     <section className="my-4 mx-auto max-w-5xl">
       <section>
-        <h1 className="text-3xl font-semibold">{postsAndSub.description}</h1>
-        <p>r/{postsAndSub.name}</p>
+        <h1 className="text-3xl font-semibold">{sub.description}</h1>
+        <p>r/{sub.name}</p>
       </section>
       <section className="flex justify-between gap-x-4">
         <section className="w-9/12">
-          {postsAndSub.posts.map((post) => (
+          {sub.posts.map((post) => (
             <PostCard
               key={post.id}
               post={post}
@@ -104,14 +104,14 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
         </section>
         <section className="my-4 h-fit min-w-[250px] max-w-xs rounded-md border p-4">
           <h2 className="mb-4 font-semibold">About community</h2>
-          <p>{postsAndSub.description}</p>
+          <p>{sub.description}</p>
           <p className="font-light text-neutral-700">
-            Created {format(postsAndSub.createdAt, "MMM dd, YYY")}
+            Created {format(sub.createdAt, "MMM dd, YYY")}
           </p>
           <hr className="my-4" />
           <div className="flex flex-col leading-4">
-            <h3>{Intl.NumberFormat().format(postsAndSub._count.users)}</h3>
-            <p>{postsAndSub._count.users === 1 ? "user" : "users"}</p>
+            <h3>{Intl.NumberFormat().format(sub._count.users)}</h3>
+            <p>{sub._count.users === 1 ? "user" : "users"}</p>
           </div>
           <hr className="my-4" />
           <div className="flex flex-col text-center">
@@ -125,10 +125,7 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
               }}
               className="rounded-full bg-teal-600 py-2 text-white duration-300 hover:bg-teal-500"
             >
-              {postsAndSub.users && postsAndSub.users.length >= 1
-                ? "Leave"
-                : "Join"}{" "}
-              Community
+              {sub.users && sub.users.length >= 1 ? "Leave" : "Join"} Community
             </button>
           </div>
         </section>
