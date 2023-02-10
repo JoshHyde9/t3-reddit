@@ -6,17 +6,12 @@ export const searchRouter = createTRPCRouter({
   searchAll: publicProcedure
     .input(z.object({ searchTerm: z.string().trim().min(1) }))
     .mutation(async ({ input, ctx }) => {
+      const query = `%${input.searchTerm}%`;
       const [subs, users] = await ctx.prisma.$transaction([
-        ctx.prisma.sub.findMany({
-          take: 10,
-          where: { name: { contains: input.searchTerm } },
-          select: { name: true },
-        }),
-        ctx.prisma.user.findMany({
-          take: 10,
-          where: { username: { contains: input.searchTerm } },
-          select: { username: true },
-        }),
+        ctx.prisma
+          .$queryRaw`SELECT name FROM "Sub" WHERE "name" ILIKE ${query} LIMIT 10;`,
+        ctx.prisma
+          .$queryRaw`SELECT username FROM "User" WHERE "username" ILIKE ${query} LIMIT 10;`,
       ]);
       return { subs, users };
     }),
