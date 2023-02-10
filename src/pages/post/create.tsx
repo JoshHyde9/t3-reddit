@@ -25,6 +25,10 @@ type ImageForm = {
   subName: string;
 };
 
+const isImage = (fileType: string) => {
+  return !!fileType.match("image/*");
+};
+
 const CreatePost: NextPage = () => {
   useIsAuth();
 
@@ -58,12 +62,19 @@ const CreatePost: NextPage = () => {
     if (image.size === 0) {
       return setGlobalError("Please select an image.");
     }
+
     if (!title || title.trim().length <= 0) {
       return setGlobalError("Title is required.");
     }
 
     if (!subName || subName.trim().length <= 0) {
       return setGlobalError("Community is required");
+    }
+
+    const validFileType = isImage(image.type);
+
+    if (!validFileType) {
+      return setGlobalError("Unsupported file type.");
     }
 
     const fileType = encodeURIComponent(image.type);
@@ -167,7 +178,7 @@ const CreatePost: NextPage = () => {
             </label>
             <input
               className="w-full appearance-none rounded-md border-2 border-teal-600 p-2 leading-tight transition-colors duration-300 ease-in-out focus:border-teal-500 focus:outline-none"
-              accept="image/jpeg image/png"
+              accept="image/jpeg, image/png"
               type="file"
               name="image"
             />
