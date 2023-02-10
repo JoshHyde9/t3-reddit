@@ -29,6 +29,7 @@ import { Comment } from "../../../../components/comment/Comment";
 import { ShareBtn } from "../../../../components/post/ShareBtn";
 import { env } from "../../../../env/client.mjs";
 import formatDistanceToNow from "date-fns/formatDistanceToNow";
+import { LoadingSpinner } from "../../../../components/layout/LoadingSpinner";
 
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ id: string; name: string }>
@@ -118,7 +119,7 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
   );
 
   if (postQuery.status !== "success") {
-    return <p>Loading...</p>;
+    return <LoadingSpinner />;
   }
 
   const { data: post } = postQuery;

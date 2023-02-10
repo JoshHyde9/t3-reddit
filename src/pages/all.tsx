@@ -2,6 +2,7 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import React from "react";
+import { LoadingSpinner } from "../components/layout/LoadingSpinner";
 import { PostCard } from "../components/post/PostCard";
 
 import { api } from "../utils/api";
@@ -24,7 +25,7 @@ const Home: NextPage = () => {
       </Head>
       <main className="mx-auto flex max-w-5xl justify-between gap-x-7 px-2 pb-10 lg:px-0">
         <section className="w-full">
-          {isLoading && !data ? <p>Loading...</p> : null}
+          {isLoading && !data ? <LoadingSpinner /> : null}
           {data?.pages.map((pages, i) => (
             <React.Fragment key={i}>
               {pages.items.map((post) => (
