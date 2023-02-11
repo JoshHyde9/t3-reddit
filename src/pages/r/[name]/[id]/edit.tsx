@@ -14,10 +14,12 @@ import { prisma } from "../../../../server/db";
 import { createInnerTRPCContext } from "../../../../server/api/trpc";
 
 import { api } from "../../../../utils/api";
-import { editPostSchema } from "../../../../utils/schema";
+import { editImagePostSchema, editPostSchema } from "../../../../utils/schema";
 
 import { Form } from "../../../../components/Form";
 import Link from "next/link";
+import { NotFound } from "../../../../components/layout/NotFound";
+import Image from "next/image";
 
 export async function getStaticProps(
   context: GetStaticPropsContext<{ id: string }>
@@ -70,7 +72,7 @@ const Edit = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
     error,
   } = api.post.updatePost.useMutation({
     onSuccess: async () => {
-      await router.push(`/post/${props.id}`);
+      await router.push(`/r/${props.subName}/${props.id}`);
     },
   });
 
@@ -86,7 +88,9 @@ const Edit = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { data: post } = postQuery;
 
   if (!post) {
-    return <p>Post not found.</p>;
+    return (
+      <NotFound message="Sorry, there doesn't seem to be anything here." />
+    );
   }
 
   if (session?.user.userId !== post.creatorId) {
@@ -111,16 +115,37 @@ const Edit = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
 
   return (
     <div className="mx-auto max-w-prose">
-      <Form
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        onSubmit={handleEdit}
-        schema={editPostSchema}
-        className="flex flex-col"
-        buttonMessage="Edit"
-        globalError={error?.message}
-        isLoading={isLoading}
-        initialData={{ title: post.title, text: post.text as string }}
-      />
+      {post.text ? (
+        <Form
+          onSubmit={handleEdit}
+          schema={editPostSchema}
+          className="flex flex-col"
+          buttonMessage="Update Post"
+          globalError={error?.message}
+          isLoading={isLoading}
+          initialData={{ title: post.title, text: post.text }}
+        />
+      ) : (
+        <Form
+          onSubmit={handleEdit}
+          schema={editImagePostSchema}
+          className="flex flex-col"
+          buttonMessage="Update Post"
+          globalError={error?.message}
+          isLoading={isLoading}
+          epic={
+            <Image
+              src={`https://t3redditclone.s3.ap-southeast-2.amazonaws.com/${
+                post.image as string
+              }`}
+              alt="post image"
+              width={500}
+              height={500}
+            />
+          }
+          initialData={{ title: post.title }}
+        />
+      )}
     </div>
   );
 };

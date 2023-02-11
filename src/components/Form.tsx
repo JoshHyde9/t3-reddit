@@ -5,12 +5,17 @@ import { z, type ZodType, type AnyZodObject } from "zod";
 
 import { TextField } from "./TextField";
 import { TextAreaField } from "./TextAreaField";
-import { fileInputSchema, textAreaSchema } from "../utils/schema";
+import {
+  fileInputSchema,
+  optionalTextAreaSchema,
+  textAreaSchema,
+} from "../utils/schema";
 import { FileInput } from "./FileInput";
 
 const mapping = [
   [z.string(), TextField],
   [textAreaSchema, TextAreaField],
+  [optionalTextAreaSchema, TextAreaField],
   [fileInputSchema, FileInput],
 ] as const;
 
@@ -25,6 +30,7 @@ type FormProps = {
   buttonMessage: string;
   globalError?: string;
   isLoading: boolean;
+  epic?: React.ReactNode;
   initialData?: Record<string, string>;
 };
 
@@ -35,6 +41,7 @@ export const Form: FunctionComponent<FormProps> = ({
   buttonMessage,
   globalError: errorResponse,
   isLoading,
+  epic,
   initialData,
 }) => {
   return (
@@ -45,6 +52,7 @@ export const Form: FunctionComponent<FormProps> = ({
       formProps={{ className }}
       renderAfter={() => (
         <>
+          {epic && epic}
           <div className="my-1 h-5">
             {errorResponse && (
               <p className={`${errorResponse ? "text-sm italic" : "hidden"}`}>

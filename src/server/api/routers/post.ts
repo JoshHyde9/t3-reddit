@@ -250,7 +250,7 @@ export const postRouter = createTRPCRouter({
           where: {
             id_creatorId: { creatorId: ctx.session.user.userId, id: input.id },
           },
-          data: { title: input.title, text: input.text },
+          data: { title: input.title, ...(input.text && { text: input.text }) },
         });
       } catch (error) {
         if (error instanceof PrismaClientKnownRequestError) {

@@ -1,6 +1,11 @@
 import { createUniqueFieldSchema } from "@ts-react/form";
 import { z } from "zod";
 
+export const optionalTextAreaSchema = createUniqueFieldSchema(
+  z.string().trim().optional().describe("Text: // Text..."),
+  "optionalTextAreaId"
+);
+
 export const textAreaSchema = createUniqueFieldSchema(
   z
     .string()
@@ -107,7 +112,7 @@ export const editPost = z.object({
     .trim()
     .min(1, { message: "title must not be empty." })
     .describe("Title: // Title..."),
-  text: textAreaSchema,
+  text: textAreaSchema.optional(),
 });
 
 export const editPostSchema = z.object({
@@ -116,7 +121,15 @@ export const editPostSchema = z.object({
     .trim()
     .min(1, { message: "title must not be empty." })
     .describe("Title: // Title..."),
-  text: textAreaSchema,
+  text: optionalTextAreaSchema,
+});
+
+export const editImagePostSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(1, { message: "title must not be empty." })
+    .describe("Title: // Title..."),
 });
 
 export const forgotPassword = z.object({ newPassword: passwordSchema });
