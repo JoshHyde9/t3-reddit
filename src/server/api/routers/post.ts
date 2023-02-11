@@ -156,6 +156,21 @@ export const postRouter = createTRPCRouter({
                           username: true,
                         },
                       },
+                      replies: {
+                        select: {
+                          id: true,
+                          createdAt: true,
+                          message: true,
+                          edited: true,
+                          commentId: true,
+                          user: {
+                            select: {
+                              id: true,
+                              username: true,
+                            },
+                          },
+                        },
+                      },
                     },
                   },
                   user: {
