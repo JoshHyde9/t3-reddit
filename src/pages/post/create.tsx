@@ -1,7 +1,9 @@
 import type { NextPage } from "next";
 import type { ChangeEvent } from "react";
+import { useEffect } from "react";
 import type { z } from "zod";
-import { useState } from "react";
+
+import { useState, useRef } from "react";
 import { useRouter } from "next/router";
 
 import { api } from "../../utils/api";
@@ -13,6 +15,7 @@ import {
 import { useIsAuth } from "../../hooks/useIsAuth";
 
 import { Form } from "../../components/Form";
+import { useOutsideAlerter } from "../../hooks/useOutsideAlerter";
 
 type S3Upload = {
   uploadUrl: string;
@@ -40,6 +43,11 @@ const CreatePost: NextPage = () => {
   const [globalError, setGlobalError] = useState<string | null>(null);
   const router = useRouter();
 
+  const [dropDown, setDropDown] = useState(false);
+
+  const wrapperRef = useRef<HTMLInputElement>(null);
+  useOutsideAlerter(wrapperRef, setDropDown);
+
   const {
     mutate: createPostMutation,
     isLoading,
@@ -49,6 +57,8 @@ const CreatePost: NextPage = () => {
       await router.replace(`/r/${subName}/${id}`);
     },
   });
+
+  const { mutate: searchSubs, data } = api.search.searchSubs.useMutation();
 
   const handleImagePost = async (event: ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -109,7 +119,7 @@ const CreatePost: NextPage = () => {
     });
   };
 
-  const handleFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFieldChange = (event: ChangeEvent<HTMLInputElement>) => {
     setFields((prevValue) => {
       return {
         ...prevValue,
@@ -117,6 +127,19 @@ const CreatePost: NextPage = () => {
       };
     });
   };
+
+  useEffect(() => {
+    if (fields.subName.trim() === "") return;
+
+    const getData = setTimeout(() => {
+      searchSubs({ searchTerm: fields.subName });
+    }, 2000);
+
+    return () => {
+      clearTimeout(getData);
+      setDropDown(true);
+    };
+  }, [fields.subName, searchSubs]);
 
   return (
     <div className="mx-auto max-w-prose">
@@ -193,11 +216,41 @@ const CreatePost: NextPage = () => {
             <input
               value={fields.subName}
               onChange={handleFieldChange}
+              autoComplete="off"
               className="w-full appearance-none rounded-md border-2 border-teal-600 p-2 leading-tight transition-colors duration-300 ease-in-out focus:border-teal-500 focus:outline-none"
               type="text"
               placeholder="KitchenConfidential"
               name="subName"
             />
+            {dropDown && (
+              <div
+                onClick={() => setDropDown(false)}
+                className="absolute z-10 w-full max-w-prose rounded-md rounded-t-none border-2 border-teal-600 bg-white px-2 pt-4"
+                ref={wrapperRef}
+              >
+                {!data?.subs ? (
+                  <h1 className="py-2 font-semibold">No results found</h1>
+                ) : (
+                  <>
+                    <h1 className="font-semibold">Communities</h1>
+                    <hr className="my-2" />
+                    <div>
+                      {data.subs.map((sub, i) => (
+                        <div key={i} className="cursor-pointer p-1">
+                          <p
+                            onClick={() =>
+                              setFields({ ...fields, subName: sub.name })
+                            }
+                          >
+                            r/{sub.name}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
           </div>
           <div className="my-1 h-5">
             {error || globalError ? (
