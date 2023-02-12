@@ -1,11 +1,13 @@
-import { type Session } from "next-auth";
-import React, { type ChangeEvent, useState, useEffect, useRef } from "react";
+import type { Session } from "next-auth";
+import type { ChangeEvent } from "react";
+import React, { useState, useRef } from "react";
 import Link from "next/link";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { signOut, useSession } from "next-auth/react";
 
 import { api } from "../../utils/api";
+import { useOutsideAlerter } from "../../hooks/useOutsideAlerter";
 
 const NavLink = ({
   to,
@@ -91,26 +93,6 @@ const MobileNav = ({
     </div>
   );
 };
-
-function useOutsideAlerter(
-  ref: React.RefObject<HTMLInputElement>,
-  setDropDown: React.Dispatch<React.SetStateAction<boolean>>
-) {
-  useEffect(() => {
-    // Close dropdown if clicked outside
-    function handleClickOutside(event: MouseEvent) {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
-        setDropDown(false);
-      }
-    }
-    // Bind the event listener
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      // Unbind the event listener on clean up
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [ref, setDropDown]);
-}
 
 const NavBar: React.FC = () => {
   const [open, setOpen] = useState(false);
