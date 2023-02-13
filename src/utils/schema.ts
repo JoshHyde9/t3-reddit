@@ -28,6 +28,7 @@ export const createPostSchema = z.object({
     .describe("Title: // Title..."),
   text: textAreaSchema.optional(),
   image: fileInputSchema.optional(),
+  nsfw: z.boolean({ required_error: "Required." }).describe("NSFW: "),
   subName: z
     .string({ required_error: "Required." })
     .trim()
@@ -47,6 +48,7 @@ export const createTextPostSchema = z.object({
     .trim()
     .min(1, { message: "sub name must not be empty." })
     .describe("Community: // Community..."),
+  nsfw: z.boolean().optional().describe("NSFW: "),
 });
 
 export const createImagePostSchema = z.object({
@@ -61,6 +63,7 @@ export const createImagePostSchema = z.object({
     .trim()
     .min(1, { message: "sub name must not be empty." })
     .describe("Community: // Community..."),
+  nsfw: z.boolean({ required_error: "Required." }).describe("NSFW: "),
 });
 
 const usernameSchema = z

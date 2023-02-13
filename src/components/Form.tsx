@@ -11,12 +11,14 @@ import {
   textAreaSchema,
 } from "../utils/schema";
 import { FileInput } from "./FileInput";
+import { CheckBoxField } from "./CheckBoxField";
 
 const mapping = [
-  [z.string(), TextField],
-  [textAreaSchema, TextAreaField],
-  [optionalTextAreaSchema, TextAreaField],
-  [fileInputSchema, FileInput],
+  [z.string(), TextField] as const,
+  [z.boolean(), CheckBoxField] as const,
+  [textAreaSchema, TextAreaField] as const,
+  [optionalTextAreaSchema, TextAreaField] as const,
+  [fileInputSchema, FileInput] as const,
 ] as const;
 
 const CreateForm = createTsForm(mapping);

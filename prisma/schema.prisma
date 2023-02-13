@@ -76,6 +76,7 @@ model Post {
     image     String?
     points    Int     @default(0)
     creatorId String
+    nsfw      Boolean @default(false)
 
     creator User @relation(fields: [creatorId], references: [id])
 

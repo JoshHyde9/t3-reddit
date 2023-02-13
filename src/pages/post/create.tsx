@@ -68,6 +68,7 @@ const CreatePost: NextPage = () => {
     const image = formData.get("image") as File;
     const subName = formData.get("subName") as string;
     const title = formData.get("title") as string;
+    const nsfw = formData.get("nsfw") as HTMLInputElement | null;
 
     if (image.size === 0) {
       return setGlobalError("Please select an image.");
@@ -107,6 +108,7 @@ const CreatePost: NextPage = () => {
       subName,
       title,
       image: data.key,
+      nsfw: !!nsfw,
     });
   };
 
@@ -116,6 +118,7 @@ const CreatePost: NextPage = () => {
       image: data.image,
       text: data.text,
       subName: data.subName,
+      nsfw: !!data.nsfw,
     });
   };
 
@@ -252,6 +255,17 @@ const CreatePost: NextPage = () => {
               </div>
             )}
           </div>
+
+          <div className="my-2 flex gap-x-4">
+            <label
+              className="my-2 block text-xs font-extrabold uppercase tracking-wide"
+              htmlFor="nsfw"
+            >
+              NSFW:
+            </label>
+            <input type="checkbox" name="nsfw" />
+          </div>
+
           <div className="my-1 h-5">
             {error || globalError ? (
               <p

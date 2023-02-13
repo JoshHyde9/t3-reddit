@@ -207,6 +207,7 @@ export const postRouter = createTRPCRouter({
               creatorId: ctx.session.user.userId,
               points: 1,
               subName: input.subName,
+              nsfw: input.nsfw,
             },
           });
           await tx.vote.create({
@@ -225,6 +226,7 @@ export const postRouter = createTRPCRouter({
               creatorId: ctx.session.user.userId,
               points: 1,
               subName: input.subName,
+              nsfw: input.nsfw,
             },
           });
 
