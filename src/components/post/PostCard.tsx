@@ -51,15 +51,17 @@ export const PostCard = ({
           {post.text ? (
             <p className="pt-2">{post.text}</p>
           ) : (
-            <Image
-              className="h-auto w-auto pt-2"
-              src={`https://t3redditclone.s3.ap-southeast-2.amazonaws.com/${
-                post.image as string
-              }`}
-              alt="post image"
-              width={500}
-              height={500}
-            />
+            <div className="flex justify-center">
+              <Image
+                className="h-auto w-auto pt-2"
+                src={`https://t3redditclone.s3.ap-southeast-2.amazonaws.com/${
+                  post.image as string
+                }`}
+                alt="post image"
+                width={500}
+                height={500}
+              />
+            </div>
           )}
         </Link>
       </div>
