@@ -32,8 +32,8 @@ type FormProps = {
   buttonMessage: string;
   globalError?: string;
   isLoading: boolean;
-  epic?: React.ReactNode;
-  initialData?: Record<string, string>;
+  image?: React.ReactNode;
+  initialData?: Record<string, string | boolean>;
 };
 
 export const Form: FunctionComponent<FormProps> = ({
@@ -43,7 +43,7 @@ export const Form: FunctionComponent<FormProps> = ({
   buttonMessage,
   globalError: errorResponse,
   isLoading,
-  epic,
+  image,
   initialData,
 }) => {
   return (
@@ -54,7 +54,7 @@ export const Form: FunctionComponent<FormProps> = ({
       formProps={{ className }}
       renderAfter={() => (
         <>
-          {epic && epic}
+          {image && <div className="flex justify-center">{image}</div>}
           <div className="my-1 h-5">
             {errorResponse && (
               <p className={`${errorResponse ? "text-sm italic" : "hidden"}`}>

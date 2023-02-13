@@ -11,11 +11,15 @@ export const CheckBoxField = () => {
       </label>
       <div className="flex h-fit flex-col">
         <input
+          className="cursor-pointer"
           onChange={(e) => {
-            field.onChange(e.target.value);
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            field.onChange(e.target.checked);
           }}
           value={field.value ? field.value : ""}
           type="checkbox"
+          checked={!!field.value}
         />
 
         <div className="h-5">

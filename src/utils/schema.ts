@@ -116,6 +116,7 @@ export const editPost = z.object({
     .min(1, { message: "title must not be empty." })
     .describe("Title: // Title..."),
   text: textAreaSchema.optional(),
+  nsfw: z.boolean().optional().describe("NSFW: "),
 });
 
 export const editPostSchema = z.object({
@@ -125,6 +126,7 @@ export const editPostSchema = z.object({
     .min(1, { message: "title must not be empty." })
     .describe("Title: // Title..."),
   text: optionalTextAreaSchema,
+  nsfw: z.boolean().optional().describe("NSFW: "),
 });
 
 export const editImagePostSchema = z.object({
@@ -133,6 +135,7 @@ export const editImagePostSchema = z.object({
     .trim()
     .min(1, { message: "title must not be empty." })
     .describe("Title: // Title..."),
+  nsfw: z.boolean().optional().describe("NSFW: "),
 });
 
 export const forgotPassword = z.object({ newPassword: passwordSchema });

@@ -110,7 +110,12 @@ const Edit = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
   }
 
   const handleEdit = (data: z.infer<typeof editPostSchema>) => {
-    updatePost({ id: post.id, title: data.title, text: data.text });
+    updatePost({
+      id: post.id,
+      title: data.title,
+      text: data.text,
+      nsfw: !!data.nsfw,
+    });
   };
 
   return (
@@ -123,7 +128,7 @@ const Edit = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
           buttonMessage="Update Post"
           globalError={error?.message}
           isLoading={isLoading}
-          initialData={{ title: post.title, text: post.text }}
+          initialData={{ title: post.title, text: post.text, nsfw: post.nsfw }}
         />
       ) : (
         <Form
@@ -133,7 +138,7 @@ const Edit = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
           buttonMessage="Update Post"
           globalError={error?.message}
           isLoading={isLoading}
-          epic={
+          image={
             <Image
               src={`https://t3redditclone.s3.ap-southeast-2.amazonaws.com/${
                 post.image as string
@@ -143,7 +148,7 @@ const Edit = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
               height={500}
             />
           }
-          initialData={{ title: post.title }}
+          initialData={{ title: post.title, nsfw: post.nsfw }}
         />
       )}
     </div>
