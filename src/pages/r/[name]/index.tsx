@@ -116,7 +116,7 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
           <hr className="my-4" />
           <div className="flex flex-col leading-4">
             <h3>{Intl.NumberFormat().format(sub._count.users)}</h3>
-            <p>{sub._count.users === 1 ? "user" : "users"}</p>
+            <p>{sub._count.users === 1 ? "member" : "members"}</p>
           </div>
           <hr className="my-4" />
           <div className="flex flex-col text-center">
