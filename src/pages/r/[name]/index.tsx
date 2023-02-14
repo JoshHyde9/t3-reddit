@@ -90,13 +90,27 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
   });
 
   return (
-    <section className="my-4 mx-auto max-w-5xl">
+    <section className="my-4 mx-auto max-w-5xl px-2">
       <section>
         <h1 className="text-3xl font-semibold">{sub.description}</h1>
         <p>r/{sub.name}</p>
+        <div className="mt-2 flex text-center md:hidden">
+          <button
+            onClick={async () => {
+              if (session.status === "authenticated") {
+                joinSub({ subName: props.name });
+              } else {
+                await router.replace(`/login?next=/r/${props.name}`);
+              }
+            }}
+            className="w-1/2 rounded-full bg-teal-600 py-2 text-white duration-300 hover:bg-teal-500"
+          >
+            {sub.users && sub.users.length >= 1 ? "Leave" : "Join"} Community
+          </button>
+        </div>
       </section>
       <section className="flex justify-between gap-x-4">
-        <section className="w-9/12">
+        <section className="w-full md:w-9/12">
           {sub.posts.map((post) => (
             <PostCard
               key={post.id}
@@ -107,7 +121,7 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
             />
           ))}
         </section>
-        <section className="my-4 h-fit min-w-[250px] max-w-xs rounded-md border p-4">
+        <section className="my-4 hidden h-fit min-w-[250px] max-w-xs rounded-md border p-4 md:block">
           <h2 className="mb-4 font-semibold">About community</h2>
           <p>{sub.description}</p>
           <p className="font-light text-neutral-700">

@@ -34,7 +34,7 @@ export const PostCard = ({
           <Link href={`/r/${post.subName}`} className="hover:underline">
             <p className="text-sm font-semibold">r/{post.subName}</p>
           </Link>
-          <span className="mx-1 font-thin">&#x2022;</span>
+          <span className="font-thin md:mx-1">&#x2022;</span>
           <p>
             Posted by{" "}
             <Link
@@ -47,7 +47,7 @@ export const PostCard = ({
           <p>{formatDistanceToNow(post.createdAt)} ago</p>
           {post.nsfw && (
             <>
-              <span className="mx-1 font-thin">&#x2022;</span>
+              <span className="font-thin md:mx-1">&#x2022;</span>
               <p className="rounded-md border-2 border-nsfw px-1 text-nsfw">
                 nsfw
               </p>

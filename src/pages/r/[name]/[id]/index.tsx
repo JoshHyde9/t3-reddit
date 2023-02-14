@@ -155,7 +155,7 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
   };
 
   return (
-    <section className="mx-auto max-w-prose">
+    <section className="mx-auto max-w-prose px-2 md:px-0">
       <article className="my-4 flex flex-row gap-2 rounded-md border">
         <Voting
           points={post.points}
