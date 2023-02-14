@@ -45,13 +45,24 @@ export const PostCard = ({
             </Link>
           </p>
           <p>{formatDistanceToNow(post.createdAt)} ago</p>
+          {post.nsfw && (
+            <>
+              <span className="mx-1 font-thin">&#x2022;</span>
+              <p className="rounded-md border-2 border-nsfw px-1 text-nsfw">
+                nsfw
+              </p>
+            </>
+          )}
         </div>
         <Link href={`/r/${post.subName}/${post.id}`}>
           <h1 className="text-lg font-semibold">{post.title}</h1>
           {post.text ? (
             <p className="pt-2">{post.text}</p>
           ) : (
-            <div className="flex justify-center">
+            <div className="relative flex justify-center">
+              {post.nsfw && (
+                <div className="absolute h-full w-full backdrop-blur-2xl"></div>
+              )}
               <Image
                 className="h-auto w-auto pt-2"
                 src={`https://t3redditclone.s3.ap-southeast-2.amazonaws.com/${

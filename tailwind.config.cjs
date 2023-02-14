@@ -6,6 +6,7 @@ module.exports = {
       colors: {
         upvote: "#ff4500",
         downvote: "#7193ff",
+        nsfw: "#ff585b",
       },
     },
   },

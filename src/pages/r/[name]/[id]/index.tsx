@@ -77,6 +77,7 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
   const utils = api.useContext();
   const [open, setOpen] = useState<null | string>(null);
   const [edit, setEdit] = useState<null | string>(null);
+  const [imageBlur, setImageBlur] = useState(true);
 
   const { mutate: deletePost } = api.post.deletePost.useMutation({
     onSuccess: async () => {
@@ -177,10 +178,36 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
               </Link>
             </p>
             <p>{formatDistanceToNow(post.createdAt)} ago</p>
+            {post.nsfw && (
+              <>
+                <span className="mx-1 font-thin">&#x2022;</span>
+                <p className="rounded-md border-2 border-nsfw px-1 text-nsfw">
+                  nsfw
+                </p>
+              </>
+            )}
           </div>
           <h1 className="text-lg font-semibold">{post.title}</h1>
           {post.text ? (
             <p className="pt-2">{post.text}</p>
+          ) : post.nsfw ? (
+            <div
+              onClick={() => setImageBlur(false)}
+              className="relative cursor-pointer pt-2"
+            >
+              {imageBlur ? (
+                <div className="absolute h-full w-full backdrop-blur-2xl"></div>
+              ) : null}
+              <Image
+                className="h-auto w-auto"
+                src={`https://t3redditclone.s3.ap-southeast-2.amazonaws.com/${
+                  post.image as string
+                }`}
+                alt="post image"
+                width={500}
+                height={500}
+              />
+            </div>
           ) : (
             <Image
               className="h-auto w-auto pt-2"
