@@ -63,7 +63,11 @@ export const subRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       try {
         return await ctx.prisma.sub.create({
-          data: { name: input.name, description: input.description },
+          data: {
+            name: input.name,
+            description: input.description,
+            moderators: { connect: { id: ctx.session.user.userId } },
+          },
         });
       } catch (error) {
         if (error instanceof PrismaClientKnownRequestError) {

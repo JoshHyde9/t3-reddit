@@ -65,7 +65,8 @@ model User {
     accounts Account[]
     sessions Session[]
 
-    subs Sub[]
+    subs       Sub[]
+    moderators Sub[] @relation("moderators")
 }
 
 model Post {
@@ -135,8 +136,9 @@ model Sub {
     name        String @unique
     description String
 
-    posts Post[]
-    users User[]
+    posts      Post[]
+    users      User[]
+    moderators User[] @relation("moderators")
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
