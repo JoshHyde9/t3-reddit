@@ -1,15 +1,18 @@
 import type { NextPage } from "next";
-import type { ChangeEvent } from "react";
-import { useEffect } from "react";
 import type { z } from "zod";
+import type { SubmitHandler } from "react-hook-form";
 
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import { api } from "../../utils/api";
 import {
   type createPostSchema,
   createTextPostSchema,
+  createImagePostSchema,
+  type CreateImagePostSchema,
 } from "../../utils/schema";
 
 import { useIsAuth } from "../../hooks/useIsAuth";
@@ -22,13 +25,9 @@ type S3Upload = {
   key: string;
 };
 
-type ImageForm = {
-  title: string;
-  image: string;
-  subName: string;
-};
-
 const isImage = (fileType: string) => {
+  console.log(fileType);
+
   return !!fileType.match("image/*");
 };
 
@@ -36,12 +35,17 @@ const CreatePost: NextPage = () => {
   useIsAuth();
 
   const [postType, setPostType] = useState<"text" | "image">("text");
-  const [fields, setFields] = useState<{ subName: string; title: string }>({
-    subName: "",
-    title: "",
-  });
   const [globalError, setGlobalError] = useState<string | null>(null);
   const router = useRouter();
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<CreateImagePostSchema>({
+    resolver: zodResolver(createImagePostSchema),
+  });
 
   const [dropDown, setDropDown] = useState(false);
 
@@ -60,35 +64,20 @@ const CreatePost: NextPage = () => {
 
   const { mutate: searchSubs, data } = api.search.searchSubs.useMutation();
 
-  const handleImagePost = async (event: ChangeEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleImagePost: SubmitHandler<CreateImagePostSchema> = async (
+    formValues
+  ) => {
+    const { image, nsfw, subName, title } = formValues;
 
-    const formData = new FormData(event.target);
-
-    const image = formData.get("image") as File;
-    const subName = formData.get("subName") as string;
-    const title = formData.get("title") as string;
-    const nsfw = formData.get("nsfw") as HTMLInputElement | null;
-
-    if (image.size === 0) {
-      return setGlobalError("Please select an image.");
-    }
-
-    if (!title || title.trim().length <= 0) {
-      return setGlobalError("Title is required.");
-    }
-
-    if (!subName || subName.trim().length <= 0) {
-      return setGlobalError("Community is required");
-    }
-
-    const validFileType = isImage(image.type);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const validFileType = isImage(image[0]!.type);
 
     if (!validFileType) {
       return setGlobalError("Unsupported file type.");
     }
 
-    const fileType = encodeURIComponent(image.type);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const fileType = encodeURIComponent(image[0]!.type);
 
     const response = await fetch(`/api/media?fileType=${fileType}`);
 
@@ -101,7 +90,7 @@ const CreatePost: NextPage = () => {
 
     await fetch(data.uploadUrl, {
       method: "PUT",
-      body: image,
+      body: image[0],
     });
 
     createPostMutation({
@@ -115,34 +104,26 @@ const CreatePost: NextPage = () => {
   const onSubmit = (data: z.infer<typeof createPostSchema>) => {
     createPostMutation({
       title: data.title,
-      image: data.image,
       text: data.text,
       subName: data.subName,
       nsfw: !!data.nsfw,
     });
   };
 
-  const handleFieldChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setFields((prevValue) => {
-      return {
-        ...prevValue,
-        [event.target.name as keyof ImageForm]: event.target.value,
-      };
-    });
-  };
+  const subName = watch("subName");
 
   useEffect(() => {
-    if (fields.subName.trim() === "") return;
+    if (!subName || subName.trim() === "") return;
 
     const getData = setTimeout(() => {
-      searchSubs({ searchTerm: fields.subName });
+      searchSubs({ searchTerm: subName });
     }, 2000);
 
     return () => {
       clearTimeout(getData);
       setDropDown(true);
     };
-  }, [fields.subName, searchSubs]);
+  }, [searchSubs, subName]);
 
   return (
     <div className="mx-auto max-w-prose">
@@ -178,7 +159,10 @@ const CreatePost: NextPage = () => {
           buttonMessage="Create post"
         />
       ) : (
-        <form className="flex flex-col" onSubmit={handleImagePost}>
+        <form
+          className="flex flex-col"
+          onSubmit={handleSubmit(handleImagePost)}
+        >
           <div className="mb-2">
             <label
               htmlFor="title"
@@ -187,13 +171,16 @@ const CreatePost: NextPage = () => {
               Title:
             </label>
             <input
-              value={fields.title}
-              onChange={handleFieldChange}
               className="w-full appearance-none rounded-md border-2 border-teal-600 p-2 leading-tight transition-colors duration-300 ease-in-out focus:border-teal-500 focus:outline-none"
               type="text"
               placeholder="Title..."
-              name="title"
+              {...register("title", { required: true })}
             />
+            <div className="h-5">
+              <span className={`text-sm italic${errors.title ? "" : "hidden"}`}>
+                {errors.title?.message}
+              </span>
+            </div>
           </div>
           <div className="my-2">
             <label
@@ -206,8 +193,13 @@ const CreatePost: NextPage = () => {
               className="w-full appearance-none rounded-md border-2 border-teal-600 p-2 leading-tight transition-colors duration-300 ease-in-out focus:border-teal-500 focus:outline-none"
               accept="image/jpeg, image/png"
               type="file"
-              name="image"
+              {...register("image", { required: true })}
             />
+            <div className="h-5">
+              <span className={`text-sm italic${errors.image ? "" : "hidden"}`}>
+                {errors.image?.message}
+              </span>
+            </div>
           </div>
           <div className="my-2">
             <label
@@ -217,18 +209,23 @@ const CreatePost: NextPage = () => {
               Community:
             </label>
             <input
-              value={fields.subName}
-              onChange={handleFieldChange}
               autoComplete="off"
               className="w-full appearance-none rounded-md border-2 border-teal-600 p-2 leading-tight transition-colors duration-300 ease-in-out focus:border-teal-500 focus:outline-none"
               type="text"
               placeholder="KitchenConfidential"
-              name="subName"
+              {...register("subName", { required: true })}
             />
+            <div className="h-5">
+              <span
+                className={`text-sm italic${errors.subName ? "" : "hidden"}`}
+              >
+                {errors.subName?.message}
+              </span>
+            </div>
             {dropDown && (
               <div
                 onClick={() => setDropDown(false)}
-                className="absolute z-10 w-full max-w-prose rounded-md rounded-t-none border-2 border-teal-600 bg-white px-2 pt-4"
+                className="absolute z-10 w-full max-w-prose -translate-y-5 rounded-md rounded-t-none border-2 border-teal-600 bg-white px-2 pt-4"
                 ref={wrapperRef}
               >
                 {!data?.subs ? (
@@ -240,11 +237,7 @@ const CreatePost: NextPage = () => {
                     <div>
                       {data.subs.map((sub, i) => (
                         <div key={i} className="cursor-pointer p-1">
-                          <p
-                            onClick={() =>
-                              setFields({ ...fields, subName: sub.name })
-                            }
-                          >
+                          <p onClick={() => setValue("subName", sub.name)}>
                             r/{sub.name}
                           </p>
                         </div>
@@ -263,7 +256,12 @@ const CreatePost: NextPage = () => {
             >
               NSFW:
             </label>
-            <input type="checkbox" name="nsfw" />
+            <input type="checkbox" {...register("nsfw")} />
+            <div className="h-5">
+              <span className={`text-sm italic${errors.nsfw ? "" : "hidden"}`}>
+                {errors.nsfw?.message}
+              </span>
+            </div>
           </div>
 
           <div className="my-1 h-5">

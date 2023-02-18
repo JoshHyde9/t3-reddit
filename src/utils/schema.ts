@@ -55,16 +55,22 @@ export const createImagePostSchema = z.object({
   title: z
     .string({ required_error: "Required." })
     .trim()
-    .min(1, { message: "title must not be empty." })
+    .min(1, { message: "Title must not be empty." })
     .describe("Title: // Title..."),
-  image: fileInputSchema,
+  image: z.custom<FileList>().refine((file) => file.length > 0, "Required."),
+  // .refine((file) => file.size >= 800000, "Max file size is 8MB."),
+  // .refine(
+  //   (file) => !["image/jpeg", "image/jpg", "image/png"].includes(file.type),
+  //   ".jpg, .jpeg and .png files are accepted."
   subName: z
     .string({ required_error: "Required." })
     .trim()
-    .min(1, { message: "sub name must not be empty." })
+    .min(1, { message: "Community name must not be empty." })
     .describe("Community: // Community..."),
-  nsfw: z.boolean({ required_error: "Required." }).describe("NSFW: "),
+  nsfw: z.boolean().describe("NSFW: "),
 });
+
+export type CreateImagePostSchema = z.infer<typeof createImagePostSchema>;
 
 const usernameSchema = z
   .string({ required_error: "Required." })
