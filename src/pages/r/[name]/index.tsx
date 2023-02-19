@@ -17,6 +17,7 @@ import { api } from "../../../utils/api";
 import { PostCard } from "../../../components/post/PostCard";
 import { useRouter } from "next/router";
 import { NotFound } from "../../../components/layout/NotFound";
+import Link from "next/link";
 
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ name: string }>
@@ -79,10 +80,6 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
     );
   }
 
-  if (sub.posts.length <= 0) {
-    return <NotFound message="No posts exist on this sub" />;
-  }
-
   const { mutate: joinSub } = api.sub.subscribeUserToSub.useMutation({
     onSettled: async () => {
       await utils.sub.getAllPostsFromSub.invalidate();
@@ -111,15 +108,19 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
       </section>
       <section className="flex justify-between gap-x-4">
         <section className="w-full md:w-9/12">
-          {sub.posts.map((post) => (
-            <PostCard
-              key={post.id}
-              post={post}
-              voteStatus={post.votes?.find(
-                (status) => post.id === status.postId
-              )}
-            />
-          ))}
+          {sub.posts.length > 0 ? (
+            sub.posts.map((post) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                voteStatus={post.votes?.find(
+                  (status) => post.id === status.postId
+                )}
+              />
+            ))
+          ) : (
+            <NotFound message="No posts exist in this community" />
+          )}
         </section>
         <section className="my-4 hidden h-fit min-w-[250px] max-w-xs rounded-md border p-4 md:block">
           <h2 className="mb-4 font-semibold">About community</h2>
@@ -146,6 +147,22 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
             >
               {sub.users && sub.users.length >= 1 ? "Leave" : "Join"} Community
             </button>
+          </div>
+          <hr className="my-4" />
+          <div className="flex flex-col">
+            <h4 className="mb-4 font-semibold">Moderators</h4>
+            <ul>
+              {sub.moderators.map((moderator, i) => (
+                <li key={i}>
+                  <Link
+                    href={`/user/${moderator.username}`}
+                    className="hover:underline"
+                  >
+                    u/{moderator.username}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
       </section>
