@@ -119,7 +119,17 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
               />
             ))
           ) : (
-            <NotFound message="No posts exist in this community" />
+            <section>
+              <NotFound message="No posts exist in this community" />
+              <section className="flex flex-col items-center">
+                <button
+                  onClick={() => router.replace("/post/create")}
+                  className="rounded-full bg-teal-600 py-2 px-5 text-white duration-300 hover:bg-teal-500"
+                >
+                  Create Post
+                </button>
+              </section>
+            </section>
           )}
         </section>
         <section className="my-4 hidden h-fit min-w-[250px] max-w-xs rounded-md border p-4 md:block">
