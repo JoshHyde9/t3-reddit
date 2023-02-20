@@ -8,7 +8,7 @@ export const optionalTextAreaSchema = createUniqueFieldSchema(
 
 export const textAreaSchema = createUniqueFieldSchema(
   z
-    .string()
+    .string({ required_error: "Required." })
     .trim()
     .min(1, { message: "Text must not be empty." })
     .describe("Text: // Text..."),
@@ -58,10 +58,6 @@ export const createImagePostSchema = z.object({
     .min(1, { message: "Title must not be empty." })
     .describe("Title: // Title..."),
   image: z.custom<FileList>().refine((file) => file.length > 0, "Required."),
-  // .refine((file) => file.size >= 800000, "Max file size is 8MB."),
-  // .refine(
-  //   (file) => !["image/jpeg", "image/jpg", "image/png"].includes(file.type),
-  //   ".jpg, .jpeg and .png files are accepted."
   subName: z
     .string({ required_error: "Required." })
     .trim()
