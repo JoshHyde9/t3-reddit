@@ -120,7 +120,9 @@ export const postRouter = createTRPCRouter({
                 },
               }
             : {}),
-
+          sub: {
+            include: { moderators: { select: { id: true } } },
+          },
           creator: {
             select: {
               username: true,
@@ -270,23 +272,38 @@ export const postRouter = createTRPCRouter({
   deletePost: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      try {
+      const post = await ctx.prisma.post.findUnique({
+        where: { id: input.id },
+        include: { sub: { include: { moderators: { select: { id: true } } } } },
+      });
+
+      if (!post) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Post does not exist.",
+        });
+      }
+
+      const isMod = post.sub.moderators.some(
+        (moderator) => moderator.id === ctx.session.user.userId
+      );
+
+      if (isMod || ctx.session.user.userId === post.creatorId) {
         await ctx.prisma.$transaction([
-          ctx.prisma.vote.deleteMany({
-            where: { postId: input.id },
-          }),
+          ctx.prisma.vote.deleteMany({ where: { postId: post.id } }),
           ctx.prisma.post.delete({
             where: {
-              id_creatorId: {
-                creatorId: ctx.session.user.userId,
-                id: input.id,
-              },
+              id: post.id,
             },
           }),
         ]);
-      } catch (error) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Post not found." });
+      } else {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Not allowed to delete someone else's post.",
+        });
       }
+
       return true;
     }),
   vote: protectedProcedure

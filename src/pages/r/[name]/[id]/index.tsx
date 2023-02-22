@@ -72,7 +72,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
-  const { data: session } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
   const router = useRouter();
   const utils = api.useContext();
   const [open, setOpen] = useState<null | string>(null);
@@ -220,14 +220,19 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
             />
           )}
           <div className="mt-4 flex gap-x-2">
-            {session?.user.userId === post.creatorId && (
-              <>
+            <>
+              {session?.user.userId === post.creatorId ||
+              post.sub.moderators.some(
+                (moderator) => moderator.id === session?.user.userId
+              ) ? (
                 <button onClick={() => deletePost({ id: post.id })}>
                   Delete
                 </button>
+              ) : null}
+              {session?.user.userId === post.creatorId && (
                 <Link href={`/r/${post.subName}/${post.id}/edit`}>Edit</Link>
-              </>
-            )}
+              )}
+            </>
           </div>
         </div>
       </article>
@@ -239,7 +244,7 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
         <ShareBtn url={`${env.NEXT_PUBLIC_URL}/r/${post.subName}/${post.id}`} />
       </section>
       <section>
-        {session?.user && (
+        {sessionStatus === "authenticated" && (
           <Form
             onSubmit={handleCreateComment}
             className="mb-10 flex flex-col"
