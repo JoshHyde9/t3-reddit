@@ -109,4 +109,18 @@ export const subRouter = createTRPCRouter({
 
       return true;
     }),
+  promoteToMod: protectedProcedure
+    .input(z.object({ username: z.string(), subName: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      try {
+        await ctx.prisma.sub.update({
+          where: { name: input.subName },
+          data: { moderators: { connect: { username: input.username } } },
+        });
+      } catch (error) {
+        console.log(error);
+      }
+
+      return true;
+    }),
 });

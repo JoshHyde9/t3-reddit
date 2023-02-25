@@ -113,6 +113,7 @@ const Post = (props: InferGetServerSidePropsType<typeof getStaticProps>) => {
               <PostCard
                 key={post.id}
                 post={post}
+                subModerators={sub.moderators}
                 voteStatus={post.votes?.find(
                   (status) => post.id === status.postId
                 )}
