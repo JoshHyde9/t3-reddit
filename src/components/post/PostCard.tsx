@@ -57,7 +57,9 @@ export const PostCard = ({
       {showModal && (
         <Modal
           title="Promote User to Mod?"
-          message={`Are you sure you want to promote ${post.creator.username} to a ${post.subName} moderator? This cannot be undone (for now.)`}
+          message={`Are you sure you want to promote ${post.creator.username} to a r/${post.subName} moderator? This cannot be undone (for now).`}
+          buttonMessage="Promote"
+          type="success"
           showModal={showModal}
           setShowModal={setShowModal}
           functionParams={{
@@ -129,7 +131,7 @@ export const PostCard = ({
             {isLoggedInUserMod && (
               <div className="ml-auto">
                 <button onClick={() => setShowModal(true)}>
-                  Promote to moderator
+                  Promote to Moderator
                 </button>
               </div>
             )}
