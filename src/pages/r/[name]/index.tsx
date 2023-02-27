@@ -7,6 +7,7 @@ import type {
 import superjson from "superjson";
 import { format } from "date-fns";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 import { appRouter } from "../../../server/api/root";
 import { createInnerTRPCContext } from "../../../server/api/trpc";
@@ -17,7 +18,6 @@ import { api } from "../../../utils/api";
 import { PostCard } from "../../../components/post/PostCard";
 import { useRouter } from "next/router";
 import { NotFound } from "../../../components/layout/NotFound";
-import Link from "next/link";
 
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ name: string }>
